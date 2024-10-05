@@ -12,3 +12,20 @@ ML Algorithms :
 - Logistic Regression
 
 Three machine-learning algorithms will be compared to determine which algorithm has the best accuracy. The one with the best accuracy will be used to create a predictive model for heart disease prediction.
+The predictive model will then be integrated into the dashboards to visualize the results, monitor patient health metrics, and provide actionable insights for healthcare professionals. This integration will allow doctors to interact with patient data, identify high-risk individuals, and make data-driven decisions, improving the overall effectiveness of heart disease management.
+
+
+Data Analysis Tools:
+
+- Pandas
+- Numpy
+- Matplotlib
+- Seaborn
+
+Programming Language:
+
+- Python
+
+Data Visualization:
+
+- Tableau
