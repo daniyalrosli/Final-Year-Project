@@ -71,3 +71,131 @@ statistics = df.describe()
 
 # Display the statistics in the app
 st.write(statistics)
+
+st.write("Here is the explanation of the statistics:")
+data = {
+    "Feature": [
+        "Age", "Sex", "Chest Pain Type (cp)", "Resting Blood Pressure (trestbps)",
+        "Cholesterol (chol)", "Fasting Blood Sugar (fbs)", "Resting ECG Results (restecg)",
+        "Maximum Heart Rate (thalach)", "Exercise-Induced Angina (exang)", "Oldpeak (ST depression)",
+        "Slope (ST segment)", "Number of Major Vessels Colored by Fluoroscopy (ca)", "Thalassemia (thal)", "Target"
+    ],
+    "Description": [
+        "The patients range from 35 to 71 years old, with an average age of 54.35 years.",
+        "68.3% of the dataset consists of male patients, highlighting that a majority are male.",
+        "Varies from 0 to 3, where higher values represent more severe chest pain. The mean value of 0.97 shows that most patients experience some form of chest pain.",
+        "The average resting blood pressure is 131.56 mm Hg, with a range between 100 and 180 mm Hg.",
+        "The cholesterol levels range from 149 to 406.74 mg/dL, with an average of 245.86 mg/dL.",
+        "Around 15% of the patients have elevated fasting blood sugar, indicating potential risks related to diabetes.",
+        "Resting ECG results indicate that most patients (53%) have normal heart activity.",
+        "The maximum heart rate achieved by patients ranges from 95.02 to 191.96 bpm, with an average of 149.72 bpm.",
+        "Around one-third of the patients experience angina induced by exercise, a significant indicator of heart issues.",
+        "Reflects heart response to stress during exercise, with values ranging from 0 to 4.2.",
+        "Represents different heart health outcomes during exercise. The mean value of 1.40 provides an indicator of the slope's role in heart disease.",
+        "The number of major vessels colored ranges from 0 to 4, indicating the severity of coronary artery disease.",
+        "Thalassemia levels vary between 0 and 3, indicating different types of blood disorders.",
+        "54.5% of the patients have heart disease, as represented by the target variable, with 1 indicating heart disease and 0 indicating no heart disease."
+    ]
+}
+
+# Create a DataFrame
+df_features = pd.DataFrame(data)
+
+# Display the table in Streamlit
+st.title("Heart Disease Data Feature Descriptions")
+st.table(df_features)
+
+numerical_features = ['age', 'chol', 'trestbps', 'thalach', 'oldpeak']
+
+
+st.title("Numerical Features Histograms")
+
+st.subheader("Distribution of Key Numerical Features")
+
+# Create the histograms and display them in Streamlit
+fig, ax = plt.subplots(3, 2, figsize=(15, 10))  # 3 rows, 2 columns to accommodate 5 plots
+ax = ax.flatten()  # Flatten the axes array for easy indexing
+
+# Plot each feature's histogram
+for i, feature in enumerate(numerical_features):
+    df[feature].hist(bins=15, edgecolor='black', ax=ax[i])
+    ax[i].set_title(f'{feature} distribution')
+
+# Remove the empty subplot (the 6th one)
+fig.delaxes(ax[-1])
+
+plt.tight_layout()
+
+# Display the plot in Streamlit
+st.pyplot(fig)
+
+data = {
+    "Feature": ["Age", "Cholesterol (Chol)", "Resting Blood Pressure (Trestbps)", 
+                "Maximum Heart Rate (Thalach)", "Oldpeak (ST Depression)"],
+    "Description": [
+        "Most individuals are between 50 and 60 years old. Heart disease risk is closely related to age.",
+        "Cholesterol levels mostly range between 200–300 mg/dL, with a peak around 250. Higher values indicate greater risk.",
+        "Resting blood pressure is clustered around 120–140 mmHg, with the most frequent value being 130. High BP correlates with increased heart disease risk.",
+        "Most individuals achieve a max heart rate of 140–170 bpm, with a peak around 160 bpm. Lower values can suggest cardiovascular issues.",
+        "Oldpeak values mostly cluster near 0, indicating low ST depression during exercise. Higher values may indicate underlying ischemia."
+    ]
+}
+
+# Convert the data into a DataFrame
+df_explanation = pd.DataFrame(data)
+
+# Display the table in Streamlit
+st.title("Feature Descriptions of HeartCare Dataset")
+st.table(df_explanation)
+
+
+# Categorical features to plot
+categorical_features = ['sex', 'cp', 'thal']
+
+# Create subplots for categorical features
+st.title("Bar Plots of Categorical Features")
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+for i, feature in enumerate(categorical_features):
+    df[feature].value_counts().plot(kind='bar', ax=axes[i], edgecolor='black')
+    axes[i].set_title(f'Distribution of {feature}')
+    axes[i].set_xlabel(feature)
+    axes[i].set_ylabel('Count')
+
+plt.tight_layout()
+st.pyplot(fig)
+
+# Explanation table for categorical features
+data_categorical = {
+    "Feature": ["Sex", "Chest Pain Type (cp)", "Thalassemia (thal)"],
+    "Description": [
+        "Sex (1 = male, 0 = female). More males in the dataset, indicating heart disease prevalence may be higher in males.",
+        "Chest pain type (0 to 3, where 0 is typical angina and 3 is asymptomatic). This indicates varying severity of chest pain.",
+        "Thalassemia categories (3 = normal, 6 = fixed defect, 7 = reversible defect). Affects oxygen levels and heart disease risk."
+    ]
+}
+
+df_categorical_explanation = pd.DataFrame(data_categorical)
+
+# Display the table in Streamlit
+st.title("Explanation of Categorical Features")
+st.table(df_categorical_explanation)
+
+
+st.title('Correlation Matrix Heatmap')
+
+# Calculate the correlation matrix
+correlation_matrix = df.corr()
+
+# Set up the matplotlib figure
+plt.figure(figsize=(12, 8))
+
+# Draw the heatmap
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5)
+
+# Set the title
+plt.title('Correlation Matrix Heatmap')
+
+# Show the plot in Streamlit
+st.pyplot(plt)
