@@ -13,9 +13,9 @@ The goal is to provide doctors with a tool that predicts heart disease risk earl
 Machine Learning Algorithms
 
 Three machine learning algorithms will be trained, tested, and compared to determine the best model for heart disease prediction:
-	•	Decision Tree 
-	•	Random Forest 
-	•	Logistic Regression 
+	•	Decision Tree = 0.75
+	•	Random Forest = 0.84
+	•	Logistic Regression = 0.87
 
 Model Comparison
 
@@ -51,10 +51,10 @@ Getting Started
 Prerequisites
 
    • Python 3.x
-	•	Django & Flask
-	•	Node.js (for Next.js)
-	•	MySQL
-	•	Jupyter Notebook
+   • Django & Flask
+   • Node.js (for Next.js)
+   • MySQL
+   • Jupyter Notebook
 
 Usage
 
