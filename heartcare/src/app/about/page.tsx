@@ -21,11 +21,8 @@ const Navbar = () => {
           <Link href="/predict" className="text-gray-700 hover:text-red-500">
             Predict
           </Link>
-          <Link href="/reports" className="text-gray-700 hover:text-red-500">
+          <Link href="/report" className="text-gray-700 hover:text-red-500">
             Reports
-          </Link>
-          <Link href="/analytics" className="text-gray-700 hover:text-red-500">
-            Analytics
           </Link>
         </div>
       </div>

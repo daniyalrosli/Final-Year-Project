@@ -24,10 +24,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-serif text-gray-800">HeartCare</h1>
         <div>
+          <a href="/" className="mx-4 text-gray-700 hover:text-red-500">Home</a>
           <a href="/predict" className="mx-4 text-gray-700 hover:text-red-500">Predict</a>
-          <a href="/reports" className="mx-4 text-gray-700 hover:text-red-500">Reports</a>
-          <a href="/analytics" className="mx-4 text-gray-700 hover:text-red-500">Analytics</a>
-          <a href="/logout" className="mx-4 text-gray-700 hover:text-red-500">Logout</a>
+          <a href="/report" className="mx-4 text-gray-700 hover:text-red-500">Reports</a>
         </div>
       </div>
     </nav>
