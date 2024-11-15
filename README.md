@@ -59,5 +59,5 @@ Prerequisites
 Usage
 
    1. Doctors access the dashboard to view predictive results and patient data.
-	2.	The predictive model analyzes patient data and flags high-risk individuals.
-	3.	Doctors can interact with data visualizations and get actionable insights to adjust treatments.
+   2.	The predictive model analyzes patient data and flags high-risk individuals.
+   3.	Doctors can interact with data visualizations and get actionable insights to adjust treatments.
