@@ -34,7 +34,7 @@ Tech Stack
 
 The following technologies are used to build HeartCare:
 	•	Frontend: Next.js for the doctor-facing dashboard interface.
-	•	Backend: Django and Flask to handle data processing, API integration, and model deployment.
+	•	Backend: Django and Flask will handle data processing, API integration, and model deployment.
 	•	Model Development: Jupyter Notebook for developing and testing machine learning models.
 	•	Database: MySQL is used to store patient information and predict results.
 
@@ -46,15 +46,7 @@ The model performance will be assessed based on the following metrics:
 	•	Recall: The sensitivity of the model in detecting patients at risk.
 	•	F1-score: The balance between precision and recall, providing a comprehensive performance measure.
 
-Getting Started
 
-Prerequisites
-
-   • Python 3.x
-   • Django & Flask
-   • Node.js (for Next.js)
-   • MySQL
-   • Jupyter Notebook
 
 Usage
 
