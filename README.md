@@ -2,54 +2,88 @@ CDCS259 FINAL YEAR PROJECT (60% completed)
 
 HeartCare: Predictive Analytics for Early Detection and Prevention
 
-Heart disease is a leading cause of mortality worldwide, and early detection and effective management are critical for improving patient outcomes. This project focuses on developing a machine learning-based prediction model to assist healthcare professionals in identifying and managing heart disease risk in patients.
-
 Project Overview
 
-Despite advancements in medical technology, there remains a need for tools that offer continuous monitoring and early risk detection of heart disease. HeartCare aims to fill this gap by leveraging machine learning models to analyze patient data, including demographic information, medical history, lifestyle factors, and clinical measurements.
-
-The goal is to provide doctors with a tool that predicts heart disease risk early, allowing for timely interventions and improved patient care.
-
-Machine Learning Algorithms
-
-Three machine learning algorithms will be trained, tested, and compared to determine the best model for heart disease prediction:
-	- Decision Tree = 0.75
-	- Random Forest = 0.84
-	- Logistic Regression = 0.87
-
-Model Comparison
-
-Each algorithm’s performance will be evaluated based on key metrics such as accuracy, precision, recall, and F1-score. The model with the best performance will be selected and deployed for real-time predictive analysis.
-
-System Integration
-
-The best-performing model will be integrated into an interactive dashboard designed for healthcare professionals. The dashboard will provide:
-	- Visualization of predictive results and patient health metrics.
-	- Real-time monitoring of patient data and heart disease risk.
-	- Actionable insights for doctors to make data-driven decisions.
-
-This tool will help doctors identify high-risk patients early on and adjust treatment plans proactively to improve heart disease management.
-
-Tech Stack
-
-The following technologies are used to build HeartCare:
-	- Frontend: Next.js for the doctor-facing dashboard interface.
-	- Backend: Django and Flask will handle data processing, API integration, and model deployment.
-	- Model Development: Jupyter Notebook for developing and testing machine learning models.
-	- Database: MySQL is used to store patient information and predict results.
-
-Model Performance
-
-The model performance will be assessed based on the following metrics:
-	- Accuracy: The overall correctness of predictions.
-	- Precision: The ability of the model to identify true positive heart disease cases.
-	- Recall: The sensitivity of the model in detecting patients at risk.
-	- F1-score: The balance between precision and recall, providing a comprehensive performance measure.
+HeartCare is a machine learning-powered application designed to assist healthcare professionals in the early detection and prevention of heart disease. By leveraging predictive analytics, it provides actionable insights into patients’ health, enabling data-driven decision-making and improving health outcomes. This project focuses on integrating a predictive model into a user-friendly dashboard for real-time patient data monitoring, analysis, and visualization.
 
 
+Problem Statement
 
-Usage
+Heart disease is a leading cause of mortality worldwide. Early detection is critical to preventing severe outcomes, but traditional diagnostic methods are often reactive and lack personalized risk assessments. There is a pressing need for predictive tools that can analyze patient data proactively, identify at-risk individuals, and provide timely interventions.
 
-   1. Doctors access the dashboard to view predictive results and patient data.
-   2.	The predictive model analyzes patient data and flags high-risk individuals.
-   3.	Doctors can interact with data visualizations and get actionable insights to adjust treatments.
+
+Objective
+
+- Develop a predictive model for heart disease risk assessment using machine learning.
+- Integrate the model into a web-based dashboard for healthcare professionals.
+- Facilitate proactive health monitoring and personalized patient care through predictive analytics.
+
+
+Preparation
+
+1. Data Collection
+   - Sourced heart disease datasets containing key features:
+   - Age, Sex, BMI, Children, Smoker, Region, and Charges.
+	
+2. Data Preprocessing
+   - Cleaned and normalized data to handle missing values and outliers.
+   -Transformed categorical variables (e.g., smoker, region) into numerical formats for model compatibility.
+   - Split the dataset into training and testing subsets (e.g., 80/20).
+  
+Development
+
+1. Machine Learning Model
+
+   Built and compared multiple algorithms for heart disease prediction:
+    - Logistic Regression
+    - Decision Tree
+    - Random Forest
+      Selected the best-performing model based on evaluation metrics (e.g., accuracy, precision).
+
+2.	Technology Stack:
+   
+	- Frontend: Next.js with App Router, styled for usability and a professional look.
+	- Backend: Django and Flask for model integration and API development.
+	- Database: MySQL for storing patient records and historical data.
+	- Model Development: Jupyter Notebook for experimentation and model optimization.
+
+3.	Dashboard
+        - Developed an intuitive dashboard for healthcare professionals using interactive visualizations to:
+	- View patient data.
+	- Track health trends.
+	- Access model predictions and alerts for high-risk individuals.
+
+
+Results and Deployment
+
+- Model Performance: Successfully implemented a highly accurate heart disease prediction model.
+- Dashboard Deployment:
+- Deployed the application for local testing with future plans for cloud hosting.
+- Dashboard allows healthcare professionals to input patient data and receive risk predictions in real-time.
+
+
+Challenges and Solutions
+
+Challenges:
+
+1. Data Quality
+   - Problem: Missing and inconsistent data points in the dataset.
+   - Solution: Applied data imputation techniques and rigorous preprocessing to ensure data quality.
+	
+2. Model Integration
+   - Problem: Ensuring seamless integration of the machine learning model into the dashboard.
+   - Solution: Used Flask APIs to bridge the backend model with the frontend interface.
+     
+3. Real-Time Predictions
+   - Problem: Achieving low-latency predictions for an interactive user experience.
+   -  Solution: Optimized the model and API infrastructure to minimize response times.
+  
+Impact of the Project
+
+HeartCare empowers healthcare professionals with:
+	- Early identification of high-risk patients.
+	- Data-driven insights for better treatment planning.
+	- Enhanced patient monitoring, potentially reducing hospital admissions and healthcare costs.
+
+By incorporating predictive analytics into healthcare, HeartCare contributes to improving public health outcomes and fostering a proactive approach to heart disease prevention.
+
