@@ -1,4 +1,4 @@
-CDCS259 FINAL YEAR PROJECT
+CDCS259 FINAL YEAR PROJECT (60% completed)
 
 HeartCare: Predictive Analytics for Early Detection and Prevention
 
