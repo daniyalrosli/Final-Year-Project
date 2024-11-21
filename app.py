@@ -1,39 +1,56 @@
-from flask import Flask, request, jsonify, render_template
-import pickle
+from flask import Flask, request, render_template
+import joblib
 import numpy as np
+import pandas as pd
 
+# Initialize Flask app
 app = Flask(__name__)
 
-# Load the pre-trained model
-try:
-    model = pickle.load(open('models/logistic_regression_model.pkl', 'rb'))
-    model_loaded = True
-except Exception as e:
-    model_loaded = False
-    print(f"Error loading model: {e}")
+# Load the trained model and scaler
+model = joblib.load('heart_disease_model.pkl')
+scaler = joblib.load('scaler.pkl')  # Load the saved scaler
 
-# Home route
+# Define the column names (same as the ones used in training)
+columns = [
+    'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach',
+    'exang', 'oldpeak', 'slope', 'ca', 'thal'
+]
+
+# Define routes
 @app.route('/')
-def home():
-    if model_loaded:
-        return "Model loaded successfully!"
-    else:
-        return "Failed to load the model."
+def index():
+    return render_template('index.html')  # Display input form
 
-# Prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
-    if not model_loaded:
-        return jsonify({'error': 'Model not loaded properly'}), 500
-    
-    data = request.get_json(force=True)
-    features = [data['age'], data['sex'], data['cp'], data['trestbps'], data['chol'], 
-                data['fbs'], data['restecg'], data['thalach'], data['exang'], 
-                data['oldpeak'], data['slope'], data['ca'], data['thal']]
-    prediction = model.predict([np.array(features)])
-    output = prediction[0]
-    return jsonify({'prediction': int(output)})
+    try:
+        # Extract input features from form
+        features = [float(x) for x in request.form.values()]  # Convert form inputs to float
 
+        # Ensure that the correct number of features are received (13 features expected)
+        if len(features) != 13:
+            return "Error: Please fill out all 13 fields."
+
+        # Convert input data to a pandas DataFrame
+        input_data = pd.DataFrame([features], columns=columns)
+
+        # Scale the input data
+        input_data_scaled = scaler.transform(input_data)  # Apply the scaler transformation
+
+        # Make prediction
+        prediction = model.predict(input_data_scaled)[0]
+        probability = model.predict_proba(input_data_scaled)[0]  # Probability scores
+
+        # Interpretation of the result
+        result = "Heart Disease Detected" if prediction == 1 else "No Heart Disease"
+        confidence = f"{max(probability) * 100:.2f}% confidence"
+
+        # Render result in the HTML page
+        return render_template('result.html', prediction=result, confidence=confidence)
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# Run the app
 if __name__ == '__main__':
     app.run(debug=True)
-    

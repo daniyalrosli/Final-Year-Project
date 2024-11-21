@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+</head>
+
+<body>
+    <h2>Heart Disease Prediction</h2>
+    <form action="/predict" method="post">
+        <label for="age">Age:</label>
+        <input type="number" step="0.01" name="age" required><br>
+        <label for="sex">Sex (1=Male, 0=Female):</label>
+        <input type="number" step="0.01" name="sex" required><br>
+        <label for="cp">Chest Pain Type (0-3):</label>
+        <input type="number" step="0.01" name="cp" required><br>
+        <label for="trestbps">Resting Blood Pressure:</label>
+        <input type="number" step="0.01" name="trestbps" required><br>
+        <label for="chol">Cholesterol:</label>
+        <input type="number" step="0.01" name="chol" required><br>
+        <label for="fbs">Fasting Blood Sugar (1=True, 0=False):</label>
+        <input type="number" step="0.01" name="fbs" required><br>
+        <label for="restecg">Rest ECG (0-2):</label>
+        <input type="number" step="0.01" name="restecg" required><br>
+        <label for="thalach">Max Heart Rate:</label>
+        <input type="number" step="0.01" name="thalach" required><br>
+        <label for="exang">Exercise Induced Angina (1=Yes, 0=No):</label>
+        <input type="number" step="0.01" name="exang" required><br>
+        <label for="oldpeak">Oldpeak:</label>
+        <input type="number" step="0.01" name="oldpeak" required><br>
+        <label for="slope">Slope (0-2):</label>
+        <input type="number" step="0.01" name="slope" required><br>
+        <label for="ca">Number of Vessels Colored (0-3):</label>
+        <input type="number" step="0.01" name="ca" required><br>
+        <label for="thal">Thalassemia (1-3):</label>
+        <input type="number" step="0.01" name="thal" required><br>
+        <button type="submit">Predict</button>
+    </form>
+</body>
+
+</html>
