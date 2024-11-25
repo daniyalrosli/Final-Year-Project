@@ -1,10 +1,13 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
 
 # Initialize Flask app
 app = Flask(__name__)
+
+CORS(app)  # Enable Cross-Origin Resource Sharing (CORS)
 
 # Load the trained model and scaler
 model = joblib.load('heart_disease_model.pkl')
@@ -24,15 +27,15 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Extract input features from form
-        features = [float(x) for x in request.form.values()]  # Convert form inputs to float
+        # Extract input features from the form
+        data = request.get_json()  # Expecting JSON input from the frontend (this will be the case for API requests)
 
         # Ensure that the correct number of features are received (13 features expected)
-        if len(features) != 13:
-            return "Error: Please fill out all 13 fields."
+        if len(data) != 13:
+            return jsonify({"error": "Please fill out all 13 fields."}), 400  # Return error message as JSON
 
         # Convert input data to a pandas DataFrame
-        input_data = pd.DataFrame([features], columns=columns)
+        input_data = pd.DataFrame([data], columns=columns)
 
         # Scale the input data
         input_data_scaled = scaler.transform(input_data)  # Apply the scaler transformation
@@ -45,11 +48,11 @@ def predict():
         result = "Heart Disease Detected" if prediction == 1 else "No Heart Disease"
         confidence = f"{max(probability) * 100:.2f}% confidence"
 
-        # Render result in the HTML page
-        return render_template('result.html', prediction=result, confidence=confidence)
+        # Return prediction result as JSON
+        return jsonify({"prediction": result, "confidence": confidence})
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return jsonify({"error": str(e)}), 500  # Return error message as JSON in case of exception
 
 # Run the app
 if __name__ == '__main__':

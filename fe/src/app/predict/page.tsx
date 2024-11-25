@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation'; 
 
 // Navbar component for navigation
 const Navbar = () => {
@@ -22,45 +22,45 @@ const Navbar = () => {
   );
 };
 
-// Define the structure for form data
-interface FormData {
-  age: number | '';
-  gender: string;
-  chestPain: string;
-  restingBP: number | '';
-  serumCholesterol: number | '';
-  fastingBloodSugar: number | '';
-  restingECG: string;
-  maxHeartRate: number | '';
-  exerciseAngina: string;
-  oldpeak: number | '';
+type FormData = {
+  age: string;
+  sex: string;
+  cp: string;
+  trestbps: string;
+  chol: string;
+  fbs: string;
+  restecg: string;
+  thalach: string;
+  exang: string;
+  oldpeak: string;
   slope: string;
-  ca: number | '';
+  ca: string;
   thal: string;
-}
+};
 
-// PredictForm component
+type Errors = Partial<Record<keyof FormData, string>>;
+
 const PredictForm = () => {
-  const router = useRouter(); // Initialize the useRouter hook
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     age: '',
-    gender: '',
-    chestPain: '',
-    restingBP: '',
-    serumCholesterol: '',
-    fastingBloodSugar: '',
-    restingECG: '',
-    maxHeartRate: '',
-    exerciseAngina: '',
+    sex: '',
+    cp: '',
+    trestbps: '',
+    chol: '',
+    fbs: '',
+    restecg: '',
+    thalach: '',
+    exang: '',
     oldpeak: '',
     slope: '',
     ca: '',
     thal: '',
   });
-  
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Errors>({});
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ prediction: string; confidence: string } | null>(null);
 
-  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -69,14 +69,11 @@ const PredictForm = () => {
     });
   };
 
-  // Validation logic
   const validate = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Errors = {};
     for (const [key, value] of Object.entries(formData)) {
-      if (typeof value === 'string' && !value) {
-        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required.`;
-      } else if (typeof value === 'number' && isNaN(value)) {
-        newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} must be a number.`;
+      if (!value) {
+        newErrors[key as keyof FormData] = `${key.toUpperCase()} is required.`;
       }
     }
     setErrors(newErrors);
@@ -84,63 +81,67 @@ const PredictForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) {
-      return;
+  e.preventDefault();
+  if (!validate()) {
+    return;
+  }
+
+  const payload = Object.fromEntries(
+    Object.entries(formData).map(([key, value]) => [key, parseFloat(value)])
+  );
+
+  setLoading(true);
+
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
+    const response = await fetch(`${API_URL}/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json(); // Parse error response as JSON
+      throw new Error(errorData.error || 'Prediction request failed');
     }
 
-    // Prepare the user data for the prediction API
-    const userData = {
-      age: formData.age,
-      gender: formData.gender,
-      chestPain: formData.chestPain,
-      restingBP: formData.restingBP,
-      serumCholesterol: formData.serumCholesterol,
-      fastingBloodSugar: formData.fastingBloodSugar,
-      restingECG: formData.restingECG,
-      maxHeartRate: formData.maxHeartRate,
-      exerciseAngina: formData.exerciseAngina,
-      oldpeak: formData.oldpeak,
-      slope: formData.slope,
-      ca: formData.ca,
-      thal: formData.thal,
-    };
+    const data = await response.json();
+    console.log('API Response:', data); // Debugging line
 
-    try {
-      const response = await fetch('/api/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data: userData }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch prediction data');
-      }
-
-      const result = await response.json();
-      router.push(`/results?risk=${result.risk}`); // Redirect to results page with risk as a query parameter
-    } catch (error) {
+    setResult({
+      prediction: data.prediction || "Unknown",
+      confidence: data.confidence || "0",
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error during prediction:', error.message, error.stack);
+    } else {
       console.error('Error during prediction:', error);
-      alert('An error occurred while making the prediction. Please try again.');
     }
-  };
+    if (error instanceof Error) {
+      alert(`Error: ${error.message}`);
+    } else {
+      alert('An unknown error occurred.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const formFields = [
-    { id: 'age', label: 'Age', type: 'number', placeholder: 'Enter your age' },
-    { id: 'gender', label: 'Gender', type: 'text', placeholder: 'Enter your gender' },
-    { id: 'chestPain', label: 'Chest Pain', type: 'text', placeholder: 'Describe chest pain' },
-    { id: 'restingBP', label: 'Resting BP', type: 'number', placeholder: 'Enter resting BP' },
-    { id: 'serumCholesterol', label: 'Serum Cholesterol', type: 'number', placeholder: 'Enter serum cholesterol level' },
-    { id: 'fastingBloodSugar', label: 'Fasting Blood Sugar', type: 'number', placeholder: 'Enter fasting blood sugar level' },
-    { id: 'restingECG', label: 'Resting ECG', type: 'text', placeholder: 'Describe resting ECG results' },
-    { id: 'maxHeartRate', label: 'Max Heart Rate', type: 'number', placeholder: 'Enter max heart rate' },
-    { id: 'exerciseAngina', label: 'Exercise Induced Angina', type: 'text', placeholder: 'Any exercise-induced angina?' },
-    { id: 'oldpeak', label: 'Oldpeak', type: 'number', placeholder: 'Enter oldpeak value' },
-    { id: 'slope', label: 'Slope', type: 'text', placeholder: 'Enter slope of ST segment' },
-    { id: 'ca', label: 'Ca (Major Vessel)', type: 'number', placeholder: 'Number of major vessels' },
-    { id: 'thal', label: 'Thal (Thalassemia)', type: 'text', placeholder: 'Enter Thalassemia type' },
+  const formFields: { id: keyof FormData; label: string; type: string }[] = [
+    { id: 'age', label: 'Age', type: 'number' },
+    { id: 'sex', label: 'Sex (0 = Female, 1 = Male)', type: 'number' },
+    { id: 'cp', label: 'Chest Pain Type (0-3)', type: 'number' },
+    { id: 'trestbps', label: 'Resting BP (mm Hg)', type: 'number' },
+    { id: 'chol', label: 'Serum Cholesterol (mg/dL)', type: 'number' },
+    { id: 'fbs', label: 'Fasting Blood Sugar (>120 mg/dL: 1, else 0)', type: 'number' },
+    { id: 'restecg', label: 'Resting ECG (0-2)', type: 'number' },
+    { id: 'thalach', label: 'Max Heart Rate Achieved', type: 'number' },
+    { id: 'exang', label: 'Exercise Induced Angina (0 = No, 1 = Yes)', type: 'number' },
+    { id: 'oldpeak', label: 'ST Depression', type: 'number' },
+    { id: 'slope', label: 'Slope of ST Segment (0-2)', type: 'number' },
+    { id: 'ca', label: 'Major Vessels Colored (0-4)', type: 'number' },
+    { id: 'thal', label: 'Thalassemia (0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect)', type: 'number' },
   ];
 
   return (
@@ -152,25 +153,37 @@ const PredictForm = () => {
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-lg rounded-lg border border-gray-200">
             {formFields.map(field => (
               <div key={field.id} className="flex flex-col space-y-1">
+                <label htmlFor={field.id} className="text-gray-700 font-medium">
+                  {field.label}
+                </label>
                 <Input
                   id={field.id}
                   name={field.id}
                   type={field.type}
-                  placeholder={field.placeholder}
-                  label={field.label}
-                  value={formData[field.id as keyof FormData] || ''}
+                  value={formData[field.id]}
                   onChange={handleInputChange}
+                  required
                 />
                 {errors[field.id] && <span className="text-red-500 text-sm">{errors[field.id]}</span>}
               </div>
             ))}
-            <Button
-              type="submit"
-              className="w-full"
-            >
-              Predict
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Predicting...' : 'Predict'}
             </Button>
           </form>
+
+          {/* Prediction Result Section */}
+          {result && (
+            <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-300">
+              <h2 className="text-2xl font-semibold text-center text-gray-800">Prediction Result</h2>
+              <p className="mt-4 text-lg text-gray-700 text-center">
+                <strong>Prediction:</strong> {result.prediction}
+              </p>
+              <p className="mt-2 text-lg text-gray-700 text-center">
+                <strong>Confidence:</strong> {result.confidence}%
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>
