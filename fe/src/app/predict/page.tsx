@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation'; 
+
 
 // Navbar component for navigation
 const Navbar = () => {
@@ -41,7 +41,6 @@ type FormData = {
 type Errors = Partial<Record<keyof FormData, string>>;
 
 const PredictForm = () => {
-  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     age: '',
     sex: '',
@@ -128,66 +127,67 @@ const PredictForm = () => {
   }
 };
 
-  const formFields: { id: keyof FormData; label: string; type: string }[] = [
-    { id: 'age', label: 'Age', type: 'number' },
-    { id: 'sex', label: 'Sex (0 = Female, 1 = Male)', type: 'number' },
-    { id: 'cp', label: 'Chest Pain Type (0-3)', type: 'number' },
-    { id: 'trestbps', label: 'Resting BP (mm Hg)', type: 'number' },
-    { id: 'chol', label: 'Serum Cholesterol (mg/dL)', type: 'number' },
-    { id: 'fbs', label: 'Fasting Blood Sugar (>120 mg/dL: 1, else 0)', type: 'number' },
-    { id: 'restecg', label: 'Resting ECG (0-2)', type: 'number' },
-    { id: 'thalach', label: 'Max Heart Rate Achieved', type: 'number' },
-    { id: 'exang', label: 'Exercise Induced Angina (0 = No, 1 = Yes)', type: 'number' },
-    { id: 'oldpeak', label: 'ST Depression', type: 'number' },
-    { id: 'slope', label: 'Slope of ST Segment (0-2)', type: 'number' },
-    { id: 'ca', label: 'Major Vessels Colored (0-4)', type: 'number' },
-    { id: 'thal', label: 'Thalassemia (0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect)', type: 'number' },
-  ];
+const formFields: { id: keyof FormData; label: string; type: string }[] = [
+  { id: 'age', label: 'Age', type: 'number' },
+  { id: 'sex', label: 'Sex (0 = Female, 1 = Male)', type: 'number' },
+  { id: 'cp', label: 'Chest Pain Type (0-3)', type: 'number' },
+  { id: 'trestbps', label: 'Resting BP (mm Hg)', type: 'number' },
+  { id: 'chol', label: 'Serum Cholesterol (mg/dL)', type: 'number' },
+  { id: 'fbs', label: 'Fasting Blood Sugar (>120 mg/dL: 1, else 0)', type: 'number' },
+  { id: 'restecg', label: 'Resting ECG (0-2)', type: 'number' },
+  { id: 'thalach', label: 'Max Heart Rate Achieved', type: 'number' },
+  { id: 'exang', label: 'Exercise Induced Angina (0 = No, 1 = Yes)', type: 'number' },
+  { id: 'oldpeak', label: 'ST Depression', type: 'number' },
+  { id: 'slope', label: 'Slope of ST Segment (0-2)', type: 'number' },
+  { id: 'ca', label: 'Major Vessels Colored (0-4)', type: 'number' },
+  { id: 'thal', label: 'Thalassemia (0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect)', type: 'number' },
+];
 
-  return (
-    <>
-      <Navbar />
-      <div className="bg-white min-h-screen py-12">
-        <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">Heart Disease Prediction</h1>
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-lg rounded-lg border border-gray-200">
-            {formFields.map(field => (
-              <div key={field.id} className="flex flex-col space-y-1">
-                <label htmlFor={field.id} className="text-gray-700 font-medium">
-                  {field.label}
-                </label>
-                <Input
-                  id={field.id}
-                  name={field.id}
-                  type={field.type}
-                  value={formData[field.id]}
-                  onChange={handleInputChange}
-                  required
-                />
-                {errors[field.id] && <span className="text-red-500 text-sm">{errors[field.id]}</span>}
-              </div>
-            ))}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Predicting...' : 'Predict'}
-            </Button>
-          </form>
-
-          {/* Prediction Result Section */}
-          {result && (
-            <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-300">
-              <h2 className="text-2xl font-semibold text-center text-gray-800">Prediction Result</h2>
-              <p className="mt-4 text-lg text-gray-700 text-center">
-                <strong>Prediction:</strong> {result.prediction}
-              </p>
-              <p className="mt-2 text-lg text-gray-700 text-center">
-                <strong>Confidence:</strong> {result.confidence}%
-              </p>
+return (
+  <>
+    <Navbar />
+    <div className="bg-white min-h-screen py-12">
+      <div className="max-w-4xl mx-auto px-6">
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">Heart Disease Prediction</h1>
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-lg rounded-lg border border-gray-200">
+          {formFields.map(field => (
+            <div key={field.id} className="flex flex-col space-y-1">
+              <label htmlFor={field.id} className="text-black font-medium">
+                {field.label}
+              </label>
+              <Input
+                id={field.id}
+                name={field.id}
+                type={field.type}
+                value={formData[field.id]}
+                onChange={handleInputChange}
+                required
+                className="text-black"
+              />
+              {errors[field.id] && <span className="text-red-500 text-sm">{errors[field.id]}</span>}
             </div>
-          )}
-        </div>
+          ))}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Predicting...' : 'Predict'}
+          </Button>
+        </form>
+
+        {/* Prediction Result Section */}
+        {result && (
+          <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-300">
+            <h2 className="text-2xl font-semibold text-center text-gray-800">Prediction Result</h2>
+            <p className="mt-4 text-lg text-gray-700 text-center">
+              <strong>Prediction:</strong> {result.prediction}
+            </p>
+            <p className="mt-2 text-lg text-gray-700 text-center">
+              <strong>Confidence:</strong> {result.confidence}%
+            </p>
+          </div>
+        )}
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export default PredictForm;
