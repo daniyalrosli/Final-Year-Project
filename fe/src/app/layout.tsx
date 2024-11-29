@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import { ToastContainer } from 'react-toastify'; 
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -12,6 +14,21 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <AuthProvider>
+      {/* Other layout components */}
+      <Layout>{children}</Layout>
+      <ToastContainer />
+    </AuthProvider>
+  );
+};
+
+
+
+
 
 export const metadata: Metadata = {
   title: "Create Next App",

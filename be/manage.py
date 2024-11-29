@@ -3,11 +3,13 @@
 import os
 import sys
 
-
 def main():
     """Run administrative tasks."""
+    # Set default settings module for the 'django' program.
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "heartcare_backend.settings")
+
     try:
+        # Import the necessary Django function to handle the command-line arguments
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
@@ -15,8 +17,9 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    
+    # Run the command-line utility with the provided arguments
     execute_from_command_line(sys.argv)
-
 
 if __name__ == "__main__":
     main()

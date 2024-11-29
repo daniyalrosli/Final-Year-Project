@@ -74,11 +74,19 @@ WSGI_APPLICATION = "heartcare_backend.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'heartcare_db',
+        'USER': 'heartcare_user',
+        'PASSWORD': 'yourpassword',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+
+# Add this line to use PyMySQL
+import pymysql
+pymysql.install_as_MySQLdb()
 
 
 # Password validation

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext'; // Now this should work
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth(); // Access the auth context
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -37,9 +39,18 @@ const Navbar = () => {
               <Link href="/contacts">
                 <a className="text-black hover:text-red-500 px-3 py-2 rounded-md text-md font-medium">Contacts</a>
               </Link>
-              <Link href="/login">
-                <a className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-md font-medium">Login</a>
-              </Link>
+              {!isAuthenticated ? (
+                <Link href="/login">
+                  <a className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-md font-medium">Login</a>
+                </Link>
+              ) : (
+                <button
+                  onClick={logout}
+                  className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-md font-medium"
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
@@ -101,9 +112,18 @@ const Navbar = () => {
             <Link href="/contacts">
               <a className="text-black hover:bg-red-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contacts</a>
             </Link>
-            <Link href="/login">
-              <a className="text-white bg-red-500 hover:bg-red-600 block px-3 py-2 rounded-md text-base font-medium">Login</a>
-            </Link>
+            {!isAuthenticated ? (
+              <Link href="/login">
+                <a className="text-white bg-red-500 hover:bg-red-600 block px-3 py-2 rounded-md text-base font-medium">Login</a>
+              </Link>
+            ) : (
+              <button
+                onClick={logout}
+                className="text-white bg-red-500 hover:bg-red-600 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       )}
