@@ -57,7 +57,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             <div className="space-y-4">
               <Image
-                src="/img/personalized-insights.jpg" // Replace with your images
+                src="/img/hehehhehehe.jpeg" // Replace with your images
                 alt="Personalized Insights"
                 width={100}
                 height={100}
@@ -70,7 +70,7 @@ export default function Home() {
             </div>
             <div className="space-y-4">
               <Image
-                src="/img/real-time-data.jpg"
+                src="/img/hehehe.jpeg"
                 alt="Real-Time Monitoring"
                 width={100}
                 height={100}
@@ -83,7 +83,7 @@ export default function Home() {
             </div>
             <div className="space-y-4">
               <Image
-                src="/img/trusted-experts.jpg"
+                src="/img/hehehhe.jpeg"
                 alt="Expert Guidance"
                 width={100}
                 height={100}

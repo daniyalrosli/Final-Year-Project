@@ -37,15 +37,36 @@ const ReportPage = () => {
         fill: false,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
+        tension: 0.4, // Smooth curve
       },
     ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // Prevents chart distortion
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Average Risk Score Over Time',
+      },
+    },
+    elements: {
+      point: {
+        radius: 5,
+        hoverRadius: 7, // Increases point size on hover for clarity
+      },
+    },
   };
 
   return (
     <>
       <Navbar />
       <div className="bg-white min-h-screen p-6">
-        <h1 className="text-3xl font-bold mb-6">Reports</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Reports</h1>
 
         {/* Filter Options */}
         <div className="mb-4">
@@ -54,7 +75,7 @@ const ReportPage = () => {
             id="dateRange"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-red-500"
           >
             <option value="last30days">Last 30 Days</option>
             <option value="last60days">Last 60 Days</option>
@@ -64,49 +85,38 @@ const ReportPage = () => {
 
         {/* Summary Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Total Reports</h2>
-            <p className="text-3xl">150</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Total Reports</h2>
+            <p className="text-3xl font-bold text-gray-900">150</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Average Risk Score</h2>
-            <p className="text-3xl">73</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Average Risk Score</h2>
+            <p className="text-3xl font-bold text-gray-900">73</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Highest Risk</h2>
-            <p className="text-3xl">90</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Highest Risk</h2>
+            <p className="text-3xl font-bold text-gray-900">90</p>
           </div>
         </div>
 
         {/* Chart Section */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow mb-6">
-          <h2 className="text-xl font-semibold mb-2">Risk Score Trends</h2>
-          <div className="h-60">
-            <Line data={data} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top' as const,
-                },
-                title: {
-                  display: true,
-                  text: 'Average Risk Score Over Time',
-                },
-              },
-            }} />
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Risk Score Trends</h2>
+          <div className="relative h-80">
+            <Line data={data} options={options} />
           </div>
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto bg-gray-50 p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">Report Details</h2>
-          <table className="min-w-full table-auto">
+        <div className="overflow-x-auto bg-gray-50 p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Report Details</h2>
+          <table className="min-w-full table-auto text-gray-800">
             <thead className="bg-gray-200">
               <tr>
-                <th className="px-4 py-2 text-left">Patient ID</th>
-                <th className="px-4 py-2 text-left">Date</th>
-                <th className="px-4 py-2 text-left">Risk Score</th>
-                <th className="px-4 py-2 text-left">Comments</th>
+                <th className="px-4 py-2 text-left font-medium">Patient ID</th>
+                <th className="px-4 py-2 text-left font-medium">Date</th>
+                <th className="px-4 py-2 text-left font-medium">Risk Score</th>
+                <th className="px-4 py-2 text-left font-medium">Comments</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +132,6 @@ const ReportPage = () => {
                 <td className="border px-4 py-2">65</td>
                 <td className="border px-4 py-2">Normal</td>
               </tr>
-              {/* Add more rows as needed */}
             </tbody>
           </table>
         </div>

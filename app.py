@@ -47,9 +47,16 @@ def predict():
         # Interpretation of the result
         result = "Heart Disease Detected" if prediction == 1 else "No Heart Disease"
         confidence = f"{max(probability) * 100:.2f}% confidence"
+        
+        # Calculate the risk score based on the probability of heart disease (index 1 for positive class)
+        risk_score = f"{probability[1] * 100:.2f}%"  # Risk score for heart disease
 
-        # Return prediction result as JSON
-        return jsonify({"prediction": result, "confidence": confidence})
+        # Return prediction, confidence, and risk score as JSON
+        return jsonify({
+            "prediction": result,
+            "confidence": confidence,
+            "risk_score": risk_score
+        })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Return error message as JSON in case of exception

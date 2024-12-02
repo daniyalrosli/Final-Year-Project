@@ -20,13 +20,19 @@ ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Title, T
 
 const Navbar = () => {
   return (
-    <nav className="bg-white py-4 px-8 shadow-sm">
+    <nav className="bg-white py-4 px-8 shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-serif text-gray-800">HeartCare</h1>
         <div>
-          <a href="/" className="mx-4 text-gray-700 hover:text-red-500">Home</a>
-          <a href="/predict" className="mx-4 text-gray-700 hover:text-red-500">Predict</a>
-          <a href="/report" className="mx-4 text-gray-700 hover:text-red-500">Reports</a>
+          <a href="/" className="mx-4 text-gray-700 hover:text-red-500">
+            Home
+          </a>
+          <a href="/predict" className="mx-4 text-gray-700 hover:text-red-500">
+            Predict
+          </a>
+          <a href="/report" className="mx-4 text-gray-700 hover:text-red-500">
+            Reports
+          </a>
         </div>
       </div>
     </nav>
@@ -34,7 +40,7 @@ const Navbar = () => {
 };
 
 const Dashboard = () => {
-  // Sample data for chart (You can replace this with real data from your backend)
+  // Sample data for the chart
   const data = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     datasets: [
@@ -42,67 +48,77 @@ const Dashboard = () => {
         label: 'Predicted Risks Over Time',
         data: [65, 59, 80, 81, 56, 55],
         fill: false,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.4, // Smooth curve
       },
     ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // Ensures chart scales properly
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Predicted Risks Over Time',
+      },
+    },
+    elements: {
+      point: {
+        radius: 5, // Increases point size for better visibility
+        hoverRadius: 7, // Increases point size on hover
+      },
+    },
   };
 
   return (
     <>
       <Navbar />
       <div className="bg-white min-h-screen p-6">
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">Dashboard</h1>
 
+        {/* Overview Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {/* Overview Metrics */}
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Total Patients</h2>
-            <p className="text-3xl">120</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Total Patients</h2>
+            <p className="text-3xl font-bold text-gray-900">120</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Predictions Made</h2>
-            <p className="text-3xl">85</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Predictions Made</h2>
+            <p className="text-3xl font-bold text-gray-900">85</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">Average Cholesterol</h2>
-            <p className="text-3xl">200 mg/dL</p>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Average Cholesterol</h2>
+            <p className="text-3xl font-bold text-gray-900">200 mg/dL</p>
           </div>
         </div>
 
         {/* Chart Section */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow mb-6">
-          <h2 className="text-xl font-semibold mb-2">Patient Risk Predictions</h2>
-          <div className="h-60">
-            <Line data={data} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top' as const,
-                },
-                title: {
-                  display: true,
-                  text: 'Predicted Risks Over Time',
-                },
-              },
-            }} />
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md mb-6">
+          <h2 className="text-xl font-semibold mb-2 text-gray-700">Patient Risk Predictions</h2>
+          <div className="relative h-96 w-full">
+            <Line data={data} options={options} />
           </div>
         </div>
 
         {/* Recent Activity Section */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">Recent Activity</h2>
-          <ul className="space-y-2">
-            <li>Patient John Doe: Predicted Risk - High</li>
-            <li>Patient Jane Smith: Predicted Risk - Medium</li>
-            <li>Patient Alex Johnson: Predicted Risk - Low</li>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-2 text-gray-700">Recent Activity</h2>
+          <ul className="space-y-2 text-gray-700">
+            <li>Patient Puteri Mawar: Predicted Risk - High</li>
+            <li>Patient Asrul Azeem: Predicted Risk - Medium</li>
+            <li>Patient Haqimi Solehin: Predicted Risk - Low</li>
           </ul>
         </div>
 
         {/* Alerts Section */}
-        <div className="bg-yellow-50 p-4 rounded-lg shadow mt-4">
-          <h2 className="text-xl font-semibold mb-2">Alerts</h2>
-          <p>Alert: Patient Jane Smith needs immediate attention!</p>
+        <div className="bg-yellow-50 p-4 rounded-lg shadow-md mt-6">
+          <h2 className="text-xl font-semibold mb-2 text-gray-700">Alerts</h2>
+          <p className="text-gray-800">Alert: Patient Asrul Azeem needs immediate attention!</p>
         </div>
       </div>
     </>

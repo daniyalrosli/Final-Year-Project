@@ -45,7 +45,7 @@ const Login = () => {
       });
 
       if (response.ok) {
-        login(); // Call the login function to set the authenticated state
+        login(username, password); // Call the login function to set the authenticated state
         toast.success('Login successful!');
         router.push('/dashboard'); // Redirect to the dashboard
       } else {

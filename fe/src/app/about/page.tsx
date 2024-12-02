@@ -118,14 +118,14 @@ export default function About() {
                 The platform is so easy to use, and the insights have been incredibly helpful. 
                 I feel more in control of my health than ever before!"
               </p>
-              <span className="block mt-4 text-gray-900 font-medium">- Alex D.</span>
+              <span className="block mt-4 text-gray-900 font-medium">- Al Hanis</span>
             </div>
             <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
               <p className="text-gray-600 italic">
                 "The predictions from HeartCare are remarkably accurate. 
                 It’s like having a personal heart health advisor with me at all times."
               </p>
-              <span className="block mt-4 text-gray-900 font-medium">- Sarah L.</span>
+              <span className="block mt-4 text-gray-900 font-medium">- Luqman</span>
             </div>
           </div>
         </div>
