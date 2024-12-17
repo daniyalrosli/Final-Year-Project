@@ -200,17 +200,19 @@ const PredictForm = () => {
               <p className="mt-2 text-lg text-gray-700 text-center">
                 <strong>Confidence:</strong> {result.confidence}%
               </p>
-              <p className="mt-2 text-lg text-gray-700 text-center">
-                <strong>Risk Score:</strong> {result.riskScore}
-              </p>
+            
             </div>
           )}
         </div>
 
-        {/* Side Note */}
-        <div className="mt-8 md:mt-0 md:max-w-sm w-full md:pl-12">
-          {getAdvice()}
-        </div>
+       {/* Side Note */}
+<div
+  className={`mt-8 md:mt-0 md:max-w-sm w-full md:pl-12 ${
+    result ? "text-green-700" : "text-gray-600"
+  }`}
+>
+  {getAdvice()}
+</div>
       </div>
     </>
   );

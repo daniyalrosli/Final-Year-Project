@@ -5,17 +5,20 @@ import Image from 'next/image';
 
 const Navbar = () => {
   return (
-    <nav className="bg-white py-4 px-8 shadow-sm">
+    <nav className="bg-white py-4 px-8 shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link href="/" className="text-2xl font-serif text-gray-800">HeartCare</Link>
+        <Link href="/" className="text-3xl font-serif text-gray-800 hover:text-red-500 transition-colors">HeartCare</Link>
         <div className="flex items-center space-x-8">
-          <Link href="/" className="text-gray-700 hover:text-red-500">Home</Link>
-          <Link href="/about" className="text-gray-700 hover:text-red-500">About</Link>
-          <Link href="/predict" className="text-gray-700 hover:text-red-500">Predict</Link>
-          <Link href="/dashboard" className="text-gray-700 hover:text-red-500">Dashboard</Link>
-          <Link href="/report" className="text-gray-700 hover:text-red-500">Report</Link>
-          <Link href="/contacts" className="text-gray-700 hover:text-red-500">Contacts</Link>
-          <Link href="/login" className="px-6 py-2 bg-white text-gray-700 rounded shadow-md hover:shadow-lg transition-shadow">Login</Link>
+          <Link href="/" className="text-lg text-gray-700 hover:text-red-500 transition-colors">Home</Link>
+          <Link href="/about" className="text-lg text-gray-700 hover:text-red-500 transition-colors">About</Link>
+          <Link href="/predict" className="text-lg text-gray-700 hover:text-red-500 transition-colors">Predict</Link>
+          <Link href="/dashboard" className="text-lg text-gray-700 hover:text-red-500 transition-colors">Dashboard</Link>
+          <Link href="/report" className="text-lg text-gray-700 hover:text-red-500 transition-colors">Report</Link>
+          <Link href="/contacts" className="text-lg text-gray-700 hover:text-red-500 transition-colors">Contacts</Link>
+          <div className="flex items-center space-x-4">
+            <Link href="/login" className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors">Login</Link>
+            <Link href="/signup" className="px-6 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition-colors">Register</Link>
+          </div>
         </div>
       </div>
     </nav>
