@@ -55,7 +55,7 @@ def predict():
         return jsonify({
             "prediction": result,
             "confidence": confidence,
-            "risk_score": risk_score
+            "riskScore": risk_score
         })
 
     except Exception as e:

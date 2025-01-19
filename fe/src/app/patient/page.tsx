@@ -1,103 +1,165 @@
-// pages/patients.js
+// src/app/patient/page.tsx
+
 'use client';
 
-const PatientsPage = () => {
-  // Placeholder data for multiple patients
-  const patients = [
-    {
-      id: 1,
-      name: 'John Doe',
-      age: 45,
-      gender: 'Male',
-      bmi: 27.5,
-      smoker: 'No',
-      region: 'Northwest',
-      healthMetrics: {
-        cholesterol: '200 mg/dL',
-        bloodPressure: '120/80 mmHg',
-        heartRate: '72 bpm',
-        glucoseLevel: '90 mg/dL',
-      },
-      prediction: {
-        riskLevel: 'Moderate',
-        predictionDate: 'Nov 15, 2024',
-      },
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      age: 37,
-      gender: 'Female',
-      bmi: 22.8,
-      smoker: 'Yes',
-      region: 'Southeast',
-      healthMetrics: {
-        cholesterol: '180 mg/dL',
-        bloodPressure: '110/70 mmHg',
-        heartRate: '80 bpm',
-        glucoseLevel: '95 mg/dL',
-      },
-      prediction: {
-        riskLevel: 'Low',
-        predictionDate: 'Nov 16, 2024',
-      },
-    },
-    // Add more patients as needed
-  ];
+import React from 'react';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
+// Register chart components
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+
+const Navbar = () => {
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-gray-900 text-center">Patient List</h1>
-        
-        {patients.map((patient) => (
-          <div key={patient.id} className="bg-white shadow-lg rounded-lg p-6">
-            {/* Patient Information */}
-            <section className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{patient.name}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-lg"><strong>Age:</strong> {patient.age}</p>
-                  <p className="text-lg"><strong>Gender:</strong> {patient.gender}</p>
-                </div>
-                <div>
-                  <p className="text-lg"><strong>BMI:</strong> {patient.bmi}</p>
-                  <p className="text-lg"><strong>Smoker:</strong> {patient.smoker}</p>
-                  <p className="text-lg"><strong>Region:</strong> {patient.region}</p>
-                </div>
-              </div>
-            </section>
-
-            {/* Health Metrics */}
-            <section className="mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Health Metrics</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(patient.healthMetrics).map(([key, value]) => (
-                  <div key={key} className="p-4 bg-gray-50 rounded shadow-md">
-                    <h3 className="text-lg font-semibold text-gray-700">{key}</h3>
-                    <p className="text-gray-600">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Prediction Results */}
-            <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Prediction Results</h2>
-              <div className="p-4 bg-blue-50 rounded-lg shadow-md">
-                <h3 className="text-2xl font-semibold text-blue-700">
-                  Risk Level: {patient.prediction.riskLevel}
-                </h3>
-                <p className="text-lg text-gray-700 mt-2">
-                  Prediction Date: {patient.prediction.predictionDate}
-                </p>
-              </div>
-            </section>
-          </div>
-        ))}
+    <nav className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 className="text-lg font-semibold text-gray-800">HeartCare</h1>
+        <div className="flex space-x-6">
+          <a href="/" className="text-gray-600 hover:text-blue-500 transition">
+            Home
+          </a>
+          <a href="/predict" className="text-gray-600 hover:text-blue-500 transition">
+            Predict
+          </a>
+          <a href="/dashboard" className="text-gray-600 hover:text-blue-500 transition">
+            Dashboard
+          </a>
+          <a href="/reports" className="text-gray-600 hover:text-blue-500 transition">
+            Reports
+          </a>
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default PatientsPage;
+const PatientPage = () => {
+  const data = {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    datasets: [
+      {
+        label: 'Risk Score',
+        data: [80, 75, 85, 90],
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#9ca3af' } },
+      y: { grid: { color: '#e5e7eb' }, ticks: { color: '#9ca3af' } },
+    },
+  };
+
+  return (
+    <>
+      <Navbar />
+      <main className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Patient Info */}
+          <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-6">
+              <img
+                src="/placeholder-profile.jpg"
+                alt="Patient"
+                className="w-16 h-16 rounded-full border border-gray-200"
+              />
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-800">John Doe</h1>
+                <p className="text-sm text-gray-500">Patient ID: 12345</p>
+                <p className="text-sm text-gray-500">Last Visit: 2025-01-10</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Health Overview */}
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h2 className="text-sm font-medium text-gray-500">Risk Score</h2>
+              <p className="text-2xl font-bold text-blue-600">85</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h2 className="text-sm font-medium text-gray-500">Blood Pressure</h2>
+              <p className="text-2xl font-bold text-gray-800">130/90</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h2 className="text-sm font-medium text-gray-500">Cholesterol</h2>
+              <p className="text-2xl font-bold text-gray-800">200</p>
+            </div>
+          </section>
+
+          {/* Health Trends */}
+          <section className="bg-white p-6 mt-8 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800">Risk Score Trends</h2>
+            <div className="relative h-64 mt-4">
+              <Line data={data} options={options} />
+            </div>
+          </section>
+
+          {/* Visit History */}
+          <section className="bg-white p-6 mt-8 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800">Visit History</h2>
+            <div className="overflow-x-auto mt-4">
+              <table className="min-w-full text-left text-sm text-gray-600">
+                <thead className="bg-gray-50 text-gray-800">
+                  <tr>
+                    <th className="py-2 px-4">Date</th>
+                    <th className="py-2 px-4">Risk Score</th>
+                    <th className="py-2 px-4">Doctor</th>
+                    <th className="py-2 px-4">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="py-2 px-4">2025-01-10</td>
+                    <td className="py-2 px-4">85</td>
+                    <td className="py-2 px-4">Dr. Smith</td>
+                    <td className="py-2 px-4">Increase physical activity</td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="py-2 px-4">2024-12-20</td>
+                    <td className="py-2 px-4">75</td>
+                    <td className="py-2 px-4">Dr. Taylor</td>
+                    <td className="py-2 px-4">Maintain current medication</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-4 mt-8">
+            <button className="bg-blue-500 text-white text-sm font-medium py-2 px-6 rounded-md shadow hover:bg-blue-600 transition">
+              Edit Details
+            </button>
+            <button className="bg-green-500 text-white text-sm font-medium py-2 px-6 rounded-md shadow hover:bg-green-600 transition">
+              Add Record
+            </button>
+            <button className="bg-gray-700 text-white text-sm font-medium py-2 px-6 rounded-md shadow hover:bg-gray-800 transition">
+              Download Report
+            </button>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+};
+
+export default PatientPage;

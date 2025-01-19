@@ -1,38 +1,15 @@
-// src/app/dashboard/page.tsx
-
-'use client';
-
-import React from 'react';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-// Register the components you need
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+import React from "react";
 
 const Navbar = () => {
   return (
-    <nav className="bg-white py-4 px-8 shadow-md">
+    <nav className="bg-white py-4 px-8 shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-serif text-gray-800">HeartCare</h1>
-        <div>
-          <a href="/" className="mx-4 text-gray-700 hover:text-red-500">
-            Home
-          </a>
-          <a href="/predict" className="mx-4 text-gray-700 hover:text-red-500">
-            Predict
-          </a>
-          <a href="/report" className="mx-4 text-gray-700 hover:text-red-500">
-            Reports
-          </a>
+        <div className="flex items-center space-x-8">
+          <a href="/" className="text-gray-700 hover:text-red-500">Home</a>
+          <a href="/patient" className="text-gray-700 hover:text-red-500">Patient</a>
+          <a href="/predict" className="text-gray-700 hover:text-red-500">Predict</a>
+          <a href="/report" className="text-gray-700 hover:text-red-500">Reports</a>
         </div>
       </div>
     </nav>
@@ -40,85 +17,59 @@ const Navbar = () => {
 };
 
 const Dashboard = () => {
-  // Sample data for the chart
-  const data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-      {
-        label: 'Predicted Risks Over Time',
-        data: [65, 59, 80, 81, 56, 55],
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.4, // Smooth curve
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false, // Ensures chart scales properly
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Predicted Risks Over Time',
-      },
-    },
-    elements: {
-      point: {
-        radius: 5, // Increases point size for better visibility
-        hoverRadius: 7, // Increases point size on hover
-      },
-    },
-  };
-
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen p-6">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">Dashboard</h1>
-
-        {/* Overview Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700">Total Patients</h2>
-            <p className="text-3xl font-bold text-gray-900">120</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700">Predictions Made</h2>
-            <p className="text-3xl font-bold text-gray-900">85</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700">Average Cholesterol</h2>
-            <p className="text-3xl font-bold text-gray-900">200 mg/dL</p>
-          </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold mb-2 text-gray-700">Patient Risk Predictions</h2>
-          <div className="relative h-96 w-full">
-            <Line data={data} options={options} />
+      <div className="min-h-screen bg-white text-gray-800 p-8">
+        <h1 className="text-3xl font-bold mb-6"> Dashboard</h1>
+        {/* Input Summary */}
+        <div className="bg-gray-100 p-6 rounded-lg shadow-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Patient Input Summary</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>Age: <span className="font-bold">45</span></div>
+            <div>Sex: <span className="font-bold">Male</span></div>
+            <div>Chest Pain Type: <span className="font-bold">1</span></div>
+            <div>Resting BP: <span className="font-bold">145 mm Hg</span></div>
+            <div>Serum Cholesterol: <span className="font-bold">260 mg/dL</span></div>
+            <div>Fasting Blood Sugar: <span className="font-bold">120 mg/dL</span></div>
+            <div>Resting ECG: <span className="font-bold">1</span></div>
+            <div>Max Heart Rate Achieved: <span className="font-bold">150</span></div>
+            <div>Exercise-Induced Angina: <span className="font-bold">Yes</span></div>
+            <div>ST Depression: <span className="font-bold">1.5</span></div>
+            <div>Slope of ST Segment: <span className="font-bold">1</span></div>
+            <div>Major Vessels Colored: <span className="font-bold">1</span></div>
+            <div>Thalassemia: <span className="font-bold">Fixed Defect</span></div>
           </div>
         </div>
-
-        {/* Recent Activity Section */}
-        <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2 text-gray-700">Recent Activity</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>Patient Puteri Mawar: Predicted Risk - High</li>
-            <li>Patient Asrul Azeem: Predicted Risk - Medium</li>
-            <li>Patient Haqimi Solehin: Predicted Risk - Low</li>
+        {/* Prediction Results */}
+        <div className="bg-gray-100 p-6 rounded-lg shadow-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Prediction Results</h2>
+          <p className="mb-2">
+            <span className="font-semibold">Prediction:</span> <span className="text-red-500">Heart Disease Detected</span>
+          </p>
+          <p className="mb-2">
+            <span className="font-semibold">Confidence Level:</span> 63%
+          </p>
+          <p>
+            <span className="font-semibold">Risk Score:</span> 63%
+          </p>
+        </div>
+        {/* Feature Contribution */}
+        <div className="bg-gray-100 p-6 rounded-lg shadow-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Feature Contribution Analysis</h2>
+          <ul className="space-y-2">
+            <li>1. Serum Cholesterol: <span className="font-bold">260 mg/dL</span></li>
+            <li>2. Resting BP: <span className="font-bold">145 mm Hg</span></li>
+            <li>3. ST Depression: <span className="font-bold">1.5</span></li>
           </ul>
         </div>
-
-        {/* Alerts Section */}
-        <div className="bg-yellow-50 p-4 rounded-lg shadow-md mt-6">
-          <h2 className="text-xl font-semibold mb-2 text-gray-700">Alerts</h2>
-          <p className="text-gray-800">Alert: Patient Asrul Azeem needs immediate attention!</p>
+        {/* Next Steps */}
+        <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-semibold mb-4">Next Steps</h2>
+          <ul className="list-disc pl-6">
+            <li>Consult a healthcare provider for further evaluation.</li>
+            <li>Monitor cholesterol and blood pressure levels regularly.</li>
+          </ul>
         </div>
       </div>
     </>
