@@ -1,32 +1,35 @@
-from django.contrib.auth import authenticate
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework import status
-from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
-def login(request):
+@csrf_exempt
+def signup(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            return redirect('/')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid credentials'})
-    return render(request, 'login.html')
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'error': 'Username already exists'}, status=400)
 
+        user = User.objects.create_user(username=username, password=password)
+        return JsonResponse({'message': 'User created successfully'})
 
-@api_view(['POST'])
-
+@csrf_exempt
 def login_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
 
-    username = request.data.get('username')
-    password = request.data.get('password')
-    user = authenticate(request, username=username, password=password)
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            return JsonResponse({'message': 'Login successful'})
+        return JsonResponse({'error': 'Invalid credentials'}, status=400)
 
-    if user is not None:
-        return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
-    else:
-        return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    
+def logout_view(request):
+    logout(request)
+    return JsonResponse({'message': 'Logged out successfully'})

@@ -1,20 +1,25 @@
 'use client';
-
 import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { HeartPulse } from 'lucide-react';
 
-// Navbar component definition
 const Navbar = () => {
   return (
-    <nav className="bg-white py-4 px-8 shadow-sm">
+    <nav className="bg-white py-4 px-8 shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-serif text-gray-800">HeartCare</h1>
+        {/* Logo & Branding */}
+        <Link href="/" className="flex items-center space-x-2 text-3xl font-serif text-gray-800 hover:text-red-500 transition-colors">
+          <HeartPulse className="w-8 h-8 text-red-500" />
+          <span>HeartCare</span>
+        </Link>
         <div className="flex items-center space-x-8">
-          <a href="/" className="text-gray-700 hover:text-red-500">Home</a>
-          <a href="/patient" className="text-gray-700 hover:text-red-500">Patient</a>
-          <a href="/predict" className="text-gray-700 hover:text-red-500">Predict</a>
-          <a href="/report" className="text-gray-700 hover:text-red-500">Reports</a>
+          <Link href="/" className="text-gray-700 hover:text-red-500">Home</Link>
+          <Link href="/predict" className="text-gray-700 hover:text-red-500">Predict</Link>
+          <Link href="/dashboard" className="text-gray-700 hover:text-red-500">Dashboard</Link>
+          <Link href="/report" className="text-gray-700 hover:text-red-500">Reports</Link>
+          <Link href="/contact" className="text-gray-700 hover:text-red-500">Contact</Link>
         </div>
       </div>
     </nav>
@@ -104,8 +109,6 @@ const PredictForm = () => {
       }
 
       const data = await response.json();
-      console.log('API Response:', data);
-
       setResult({
         prediction: data.prediction || "Unknown",
         confidence: data.confidence || "0",
@@ -113,11 +116,7 @@ const PredictForm = () => {
       });
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error during prediction:', error.message, error.stack);
         alert(`Error: ${error.message}`);
-      } else {
-        console.error('Error during prediction:', error);
-        alert('An unknown error occurred.');
       }
     } finally {
       setLoading(false);
@@ -140,52 +139,12 @@ const PredictForm = () => {
     { id: 'thal', label: 'Thalassemia (0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect)', type: 'number' },
   ];
 
-  const getAdvice = () => {
-    if (!result) {
-      return (
-        <div className="p-6 bg-gray-50 text-gray-700 rounded-lg shadow-md flex items-center space-x-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" />
-          </svg>
-          <div>
-            <h3 className="text-xl font-semibold">Awaiting Result</h3>
-            <p className="mt-2 text-base">Please submit the necessary information to receive heart health advice.</p>
-          </div>
-        </div>
-      );
-    } else if (result?.prediction === "Heart Disease Detected") {
-      return (
-        <div className="p-6 bg-red-100 text-red-800 rounded-lg shadow-lg flex items-center space-x-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 2h-2v7h-3l4 4 4-4h-3z" />
-          </svg>
-          <div>
-            <h3 className="text-xl font-semibold">Immediate Attention Required</h3>
-            <p className="mt-2 text-base">Heart disease detected. Seek medical attention immediately for a thorough examination and further action.</p>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="p-6 bg-green-100 text-green-800 rounded-lg shadow-lg flex items-center space-x-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" />
-          </svg>
-          <div>
-            <h3 className="text-xl font-semibold">Heart Health Advice</h3>
-            <p className="mt-2 text-base">Your heart health is in good condition! To maintain a healthy heart, continue regular exercise, a balanced diet, and routine check-ups.</p>
-          </div>
-        </div>
-      );
-    }
-  };
-
   return (
     <>
       <Navbar />
       <div className="bg-white min-h-screen py-12 flex flex-col md:flex-row justify-center items-start md:space-x-12">
         <div className="max-w-3xl w-full px-6">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">Heart Disease Prediction</h1>
+          <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">Check Your Heart Condition !!!</h1>
           <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-lg rounded-lg border border-gray-200">
             {formFields.map(field => (
               <div key={field.id} className="flex flex-col space-y-1">
@@ -209,7 +168,6 @@ const PredictForm = () => {
             </Button>
           </form>
 
-          {/* Updated Prediction Result Section */}
           {result && (
             <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-300">
               <h2 className="text-2xl font-semibold text-center text-gray-800">Prediction Result</h2>
@@ -222,30 +180,42 @@ const PredictForm = () => {
                     {result.prediction}
                   </span>
                 </div>
-                
-                <div className="flex flex-col items-center p-3 bg-white rounded-lg">
-                  <span className="text-lg font-medium text-gray-700">Confidence</span>
-                  <span className="text-xl font-bold text-blue-600">
-                    {result.confidence}%
-                  </span>
+
+                <div className="flex justify-center mt-6 space-x-6">
+                  <div className="flex flex-col items-center p-3 bg-white rounded-lg">
+                    <span className="text-lg font-medium text-gray-700">Confidence</span>
+                    <span className="text-xl font-bold text-blue-600">{result.confidence}%</span>
+                  </div>
+                  <div className="flex flex-col items-center p-3 bg-white rounded-lg">
+                    <span className="text-lg font-medium text-gray-700">Risk Score</span>
+                    <span className="text-xl font-bold text-red-600">{result.riskScore}</span>
+                  </div>
                 </div>
-                
-                <div className="flex flex-col items-center p-3 bg-white rounded-lg">
-                  <span className="text-lg font-medium text-gray-700">Risk Score</span>
-                  <span className="text-xl font-bold text-purple-600">
-                    {result.riskScore}
-                  </span>
+
+                <div className="mt-6 flex justify-center space-x-4">
+                  <Link
+                    href={{
+                      pathname: "/dashboard",
+                      query: { ...formData, prediction: result.prediction, confidence: result.confidence, riskScore: result.riskScore }
+                    }}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+                  >
+                    Go to Dashboard
+                  </Link>
+
+                  <Link
+                    href={{
+                      pathname: "/report",
+                      query: { ...formData, prediction: result.prediction, confidence: result.confidence, riskScore: result.riskScore }
+                    }}
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition"
+                  >
+                    View Report
+                  </Link>
                 </div>
               </div>
             </div>
           )}
-        </div>
-
-        {/* Side Note */}
-        <div className={`mt-8 md:mt-0 md:max-w-sm w-full md:pl-12 ${
-          result ? "text-green-700" : "text-gray-600"
-        }`}>
-          {getAdvice()}
         </div>
       </div>
     </>
