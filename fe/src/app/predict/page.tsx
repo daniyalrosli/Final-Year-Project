@@ -95,34 +95,42 @@ const PredictForm = () => {
 
     setLoading(true);
 
-    try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
-      const response = await fetch(`${API_URL}/predict`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+  try {
+    // Define API URL
+    const API_URL =
+      process.env.NEXT_PUBLIC_API_URL ?? "https://final-year-project-4v9m.onrender.com";
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Prediction request failed');
-      }
+    const response = await fetch(`${API_URL}/predict`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-      const data = await response.json();
-      setResult({
-        prediction: data.prediction || "Unknown",
-        confidence: data.confidence || "0",
-        riskScore: data.riskScore || "0",
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(`Error: ${error.message}`);
-      }
-    } finally {
-      setLoading(false);
+    // Check if response is okay
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to get prediction");
     }
-  };
 
+    // Parse response JSON
+    const data = await response.json();
+
+    setResult({
+      prediction: data.prediction ?? "Unknown",
+      confidence: data.confidence ?? "0%",
+      riskScore: data.riskScore ?? "0%",
+    });
+
+  } catch (error) {
+    console.error("Prediction API Error:", error);
+    
+    // Display user-friendly error message
+    alert(error instanceof Error ? `Error: ${error.message}` : "An unexpected error occurred. Please try again.");
+  
+  } finally {
+    setLoading(false);
+  }
+};
   const formFields: { id: keyof FormData; label: string; type: string }[] = [
     { id: 'age', label: 'Age', type: 'number' },
     { id: 'sex', label: 'Sex (0 = Female, 1 = Male)', type: 'number' },

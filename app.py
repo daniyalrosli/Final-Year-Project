@@ -7,11 +7,15 @@ import pandas as pd
 # Initialize Flask app
 app = Flask(__name__)
 
-CORS(app)  # Enable Cross-Origin Resource Sharing (CORS)
+# Enable CORS only for your frontend
+CORS(app, resources={r"/*": {"origins": "https://heartcare-brown.vercel.app"}})
 
 # Load the trained model and scaler
-model = joblib.load('heart_disease_model.pkl')
-scaler = joblib.load('scaler.pkl')  # Load the saved scaler
+try:
+    model = joblib.load('heart_disease_model.pkl')
+    scaler = joblib.load('scaler.pkl')  # Load the saved scaler
+except Exception as e:
+    print(f"Error loading model or scaler: {e}")
 
 # Define the column names (same as the ones used in training)
 columns = [
@@ -19,7 +23,6 @@ columns = [
     'exang', 'oldpeak', 'slope', 'ca', 'thal'
 ]
 
-# Define routes
 @app.route('/')
 def index():
     return render_template('index.html')  # Display input form
@@ -27,31 +30,28 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Extract input features from the form
-        data = request.get_json()  # Expecting JSON input from the frontend (this will be the case for API requests)
+        # Get JSON input
+        data = request.get_json()
 
-        # Ensure that the correct number of features are received (13 features expected)
-        if len(data) != 13:
-            return jsonify({"error": "Please fill out all 13 fields."}), 400  # Return error message as JSON
+        # Validate input data
+        if not data or len(data) != len(columns):
+            return jsonify({"error": "Invalid input. Ensure all 13 fields are provided."}), 400
 
-        # Convert input data to a pandas DataFrame
+        # Convert input data to DataFrame
         input_data = pd.DataFrame([data], columns=columns)
 
         # Scale the input data
-        input_data_scaled = scaler.transform(input_data)  # Apply the scaler transformation
+        input_data_scaled = scaler.transform(input_data)
 
         # Make prediction
         prediction = model.predict(input_data_scaled)[0]
         probability = model.predict_proba(input_data_scaled)[0]  # Probability scores
 
-        # Interpretation of the result
+        # Prepare response
         result = "Heart Disease Detected" if prediction == 1 else "No Heart Disease"
-        confidence = f"{max(probability) * 100:.2f}% confidence"
-        
-        # Calculate the risk score based on the probability of heart disease (index 1 for positive class)
-        risk_score = f"{probability[1] * 100:.2f}%"  # Risk score for heart disease
+        confidence = f"{max(probability) * 100:.2f}%"
+        risk_score = f"{probability[1] * 100:.2f}%"
 
-        # Return prediction, confidence, and risk score as JSON
         return jsonify({
             "prediction": result,
             "confidence": confidence,
@@ -59,7 +59,8 @@ def predict():
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  # Return error message as JSON in case of exception
+        print(f"Prediction Error: {e}")  # Log error
+        return jsonify({"error": "An internal error occurred. Please try again later."}), 500
 
 # Run the app
 if __name__ == '__main__':
