@@ -1,9 +1,10 @@
+
 {
   "version": 2,
   "builds": [
-    { "src": "app.py", "use": "@vercel/python" }
+    { "src": "next.config.js", "use": "@vercel/next" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/app.py" }
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
