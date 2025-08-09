@@ -22,7 +22,7 @@ MIDDLEWARE = [
 
 # Allow CORS for your Next.js frontend
 CORS_ALLOW_ALL_ORIGINS = True  # Change this to a specific origin for better security
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3001']  # Adjust for production
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3001', 'http://localhost:3000']  # Adjust for production
 
 # Allow requests only from specific hosts
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]  # Add your production domain if needed

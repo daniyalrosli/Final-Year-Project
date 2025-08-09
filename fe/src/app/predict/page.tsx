@@ -3,40 +3,7 @@ import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-
-const HeartIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-red-500">
-    <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
-  </svg>
-);
-
-const Navbar = () => {
-  return (
-    <nav className="bg-white py-4 px-8 shadow-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo & Branding */}
-        <Link href="/" className="flex items-center space-x-2 text-3xl font-serif text-gray-800 hover:text-red-500 transition-colors">
-          <HeartIcon />
-          <span className="font-semibold">HeartCare</span>
-        </Link>
-        <div className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-gray-700 hover:text-red-500 font-medium">Home</Link>
-          <Link href="/predict" className="text-gray-700 hover:text-red-500 font-medium">Predict</Link>
-          <Link href="/dashboard" className="text-gray-700 hover:text-red-500 font-medium">Dashboard</Link>
-          <Link href="/report" className="text-gray-700 hover:text-red-500 font-medium">Reports</Link>
-          <Link href="/contact" className="text-gray-700 hover:text-red-500 font-medium">Contact</Link>
-        </div>
-        <div className="md:hidden">
-          <button className="text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
-};
+import Navbar from '../components/navbar';
 
 type FormData = {
   age: string;
@@ -110,8 +77,7 @@ const PredictForm = () => {
 
     try {
       // Define API URL
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL ?? "https://final-year-project-4v9m.onrender.com";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
@@ -210,8 +176,8 @@ const PredictForm = () => {
   const renderField = (field: Field) => {
     if (field.type === 'select') {
       return (
-        <div key={field.id} className="mb-4">
-          <label htmlFor={field.id} className="block text-gray-700 font-medium mb-1">
+        <div key={field.id} className="mb-6">
+          <label htmlFor={field.id} className="block text-gray-900 font-medium mb-2">
             {field.label}
           </label>
           <select
@@ -219,7 +185,7 @@ const PredictForm = () => {
             name={field.id}
             value={formData[field.id as keyof FormData]}
             onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
           >
             <option value="">Select an option</option>
             {field.options?.map((option: { value: string; label: string }) => (
@@ -228,17 +194,17 @@ const PredictForm = () => {
               </option>
             ))}
           </select>
-          {field.help && <p className="text-sm text-gray-500 mt-1">{field.help}</p>}
+          {field.help && <p className="text-sm text-gray-700 mt-2">{field.help}</p>}
           {errors[field.id as keyof FormData] && (
-            <p className="text-red-500 text-sm mt-1">{errors[field.id as keyof FormData]}</p>
+            <p className="text-red-500 text-sm mt-2">{errors[field.id as keyof FormData]}</p>
           )}
         </div>
       );
     }
     
     return (
-      <div key={field.id} className="mb-4">
-        <label htmlFor={field.id} className="block text-gray-700 font-medium mb-1">
+      <div key={field.id} className="mb-6">
+        <label htmlFor={field.id} className="block text-gray-900 font-medium mb-2">
           {field.label}
         </label>
         <Input
@@ -247,11 +213,11 @@ const PredictForm = () => {
           type={field.type}
           value={formData[field.id as keyof FormData]}
           onChange={handleInputChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
         />
-        {field.help && <p className="text-sm text-gray-500 mt-1">{field.help}</p>}
+        {field.help && <p className="text-sm text-gray-700 mt-2">{field.help}</p>}
         {errors[field.id as keyof FormData] && (
-          <p className="text-red-500 text-sm mt-1">{errors[field.id as keyof FormData]}</p>
+          <p className="text-red-500 text-sm mt-2">{errors[field.id as keyof FormData]}</p>
         )}
       </div>
     );
@@ -263,31 +229,29 @@ const PredictForm = () => {
       { id: 'clinical', label: 'Clinical Data' },
       { id: 'results', label: 'Results' }
     ];
-    
     const currentIndex = steps.findIndex(step => step.id === activeSection);
-    
     return (
-      <div className="mb-8">
-        <div className="flex justify-between items-center w-full mb-2">
+      <div className="mb-8 animate-fade-in">
+        <div className="flex justify-between items-center w-full mb-4">
           {steps.map((step, index) => (
             <div 
               key={step.id} 
-              className={`flex flex-col items-center ${index <= currentIndex ? 'text-red-500' : 'text-gray-400'}`}
+              className={`flex flex-col items-center transition-colors duration-300 ${index <= currentIndex ? 'text-red-500' : 'text-gray-400'}`}
             >
-              <div className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                index < currentIndex ? 'bg-red-500 text-white' : 
-                index === currentIndex ? 'border-2 border-red-500 text-red-500' : 
-                'border-2 border-gray-300 text-gray-400'
-              }`}>
+              <div className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300
+                ${index < currentIndex ? 'bg-red-500 text-white' : 
+                  index === currentIndex ? 'border-2 border-red-500 text-red-500' : 
+                  'border-2 border-gray-300 text-gray-400'}
+              `}>
                 {index < currentIndex ? '✓' : index + 1}
               </div>
-              <span className="text-sm mt-1 font-medium">{step.label}</span>
+              <span className="text-sm mt-2 font-medium text-gray-900">{step.label}</span>
             </div>
           ))}
         </div>
-        <div className="relative h-2 w-full bg-gray-200 rounded-full">
+        <div className="relative h-3 w-full bg-gray-200 rounded-full overflow-hidden">
           <div 
-            className="absolute h-full bg-red-500 rounded-full transition-all duration-300 ease-in-out"
+            className="absolute h-full bg-red-500 rounded-full transition-all duration-500 ease-in-out"
             style={{width: `${(currentIndex / (steps.length - 1)) * 100}%`}}
           ></div>
         </div>
@@ -297,33 +261,35 @@ const PredictForm = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="bg-gray-50 min-h-screen py-12">
-        <div className="max-w-4xl mx-auto px-6">
+      <Navbar currentPage="/predict" />
+      <div className="bg-gray-50 min-h-screen py-12 px-6 md:px-8">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">Heart Health Assessment</h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif">Heart Health Assessment</h1>
+            <p className="text-gray-900 max-w-2xl mx-auto text-lg">
               Input your health parameters to receive an instant evaluation of your heart disease risk.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+          <div className="bg-white p-8 md:p-10 rounded-xl shadow-lg border border-gray-100">
             {renderProgressBar()}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="transition-all duration-500">
               {activeSection === 'demographic' && (
                 <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
-                    <p className="text-gray-600 mb-6">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+                    <p className="text-gray-900 mb-8 text-lg">
                       Please provide your basic demographic information to start the assessment.
                     </p>
-                    {demographicFields.map(renderField)}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {demographicFields.map(renderField)}
+                    </div>
                   </div>
                   <div className="flex justify-end">
                     <Button 
                       type="button" 
-                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg"
+                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105"
                       onClick={() => setActiveSection('clinical')}
                     >
                       Next
@@ -334,26 +300,26 @@ const PredictForm = () => {
 
               {activeSection === 'clinical' && (
                 <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Clinical Information</h2>
-                    <p className="text-gray-600 mb-6">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">Clinical Information</h2>
+                    <p className="text-gray-900 mb-8 text-lg">
                       Please provide your clinical measurements for accurate assessment.
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                       {clinicalFields.map(renderField)}
                     </div>
                   </div>
                   <div className="flex justify-between">
                     <Button 
                       type="button" 
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg"
+                      className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-8 rounded-lg transition-all duration-300"
                       onClick={() => setActiveSection('demographic')}
                     >
                       Back
                     </Button>
                     <Button 
                       type="submit" 
-                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg"
+                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105"
                       disabled={loading}
                     >
                       {loading ? 'Processing...' : 'Get Results'}
@@ -363,19 +329,19 @@ const PredictForm = () => {
               )}
 
               {activeSection === 'results' && result && (
-                <div className="text-center">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Heart Health Results</h2>
-                    <p className="text-gray-600 mb-6">
+                <div className="text-center animate-fade-in">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">Your Heart Health Results</h2>
+                    <p className="text-gray-900 mb-8 text-lg">
                       Based on your provided information, here are your heart health assessment results.
                     </p>
                   </div>
 
                   <div className="mb-8">
-                    <div className="inline-flex items-center justify-center p-4 rounded-full bg-gray-100 mb-4">
+                    <div className="inline-flex items-center justify-center p-6 rounded-full bg-gray-100 mb-6">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" 
                         strokeLinecap="round" strokeLinejoin="round" 
-                        className={`w-16 h-16 ${result.prediction === "Heart Disease Detected" ? "text-red-500" : "text-green-500"}`}>
+                        className={`w-20 h-20 ${result.prediction === "Heart Disease Detected" ? "text-red-500" : "text-green-500"}`}>
                         {result.prediction === "Heart Disease Detected" ? (
                           <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
                         ) : (
@@ -387,27 +353,27 @@ const PredictForm = () => {
                       </svg>
                     </div>
 
-                    <h3 className={`text-3xl font-bold mb-6 ${
+                    <h3 className={`text-3xl font-bold mb-8 ${
                       result.prediction === "Heart Disease Detected" ? "text-red-600" : "text-green-600"
                     }`}>
                       {result.prediction}
                     </h3>
 
-                    <div className="flex flex-col md:flex-row justify-center gap-6 mb-8">
-                      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex-1">
-                        <h4 className="text-lg font-semibold text-gray-700 mb-2">Confidence</h4>
-                        <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                      <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                        <h4 className="text-lg font-semibold text-gray-700 mb-4">Confidence</h4>
+                        <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
                           <div 
-                            className="bg-blue-600 h-4 rounded-full" 
+                            className="bg-blue-600 h-4 rounded-full transition-all duration-1000" 
                             style={{ width: `${parseFloat(result.confidence)}%` }}
                           ></div>
                         </div>
-                        <p className="text-2xl font-bold text-blue-600 mt-2">{result.confidence}%</p>
+                        <p className="text-3xl font-bold text-blue-600">{result.confidence}%</p>
                       </div>
 
-                      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex-1">
-                        <h4 className="text-lg font-semibold text-gray-700 mb-2">Risk Score</h4>
-                        <div className="relative pt-1">
+                      <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                        <h4 className="text-lg font-semibold text-gray-700 mb-4">Risk Score</h4>
+                        <div className="relative pt-1 mb-4">
                           <div className="flex mb-2 items-center justify-between">
                             <div className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
                               Low
@@ -421,7 +387,7 @@ const PredictForm = () => {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-4">
                             <div 
-                              className={`h-4 rounded-full ${
+                              className={`h-4 rounded-full transition-all duration-1000 ${
                                 parseFloat(result.riskScore) < 25 ? 'bg-green-500' :
                                 parseFloat(result.riskScore) < 50 ? 'bg-yellow-500' :
                                 parseFloat(result.riskScore) < 75 ? 'bg-orange-500' : 'bg-red-500'
@@ -430,17 +396,17 @@ const PredictForm = () => {
                             ></div>
                           </div>
                         </div>
-                        <p className="text-2xl font-bold text-red-600 mt-2">{result.riskScore}%</p>
+                        <p className="text-3xl font-bold text-red-600">{result.riskScore}%</p>
                       </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row justify-center gap-4">
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
                       <Link
                         href={{
                           pathname: "/dashboard",
                           query: { ...formData, prediction: result.prediction, confidence: result.confidence, riskScore: result.riskScore }
                         }}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition font-medium"
+                        className="bg-blue-600 text-white px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300 font-medium transform hover:scale-105"
                       >
                         View Detailed Dashboard
                       </Link>
@@ -450,14 +416,14 @@ const PredictForm = () => {
                           pathname: "/report",
                           query: { ...formData, prediction: result.prediction, confidence: result.confidence, riskScore: result.riskScore }
                         }}
-                        className="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition font-medium"
+                        className="bg-green-600 text-white px-8 py-4 rounded-lg shadow-lg hover:bg-green-700 transition-all duration-300 font-medium transform hover:scale-105"
                       >
                         Generate PDF Report
                       </Link>
                       
                       <Button 
                         type="button" 
-                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-6 rounded-lg"
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-4 px-8 rounded-lg transition-all duration-300"
                         onClick={() => {
                           setFormData({
                             age: '',
@@ -492,6 +458,17 @@ const PredictForm = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+      `}</style>
     </>
   );
 };

@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { HiHeart, HiOutlineMenu, HiX } from 'react-icons/hi';
-import { useState } from 'react';
+import { HiHeart, HiOutlineMenu, HiX, HiChartBar, HiShieldCheck, HiLightningBolt } from 'react-icons/hi';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,7 +21,8 @@ const Navbar = () => {
           <Link href="/" className="font-medium text-gray-800 hover:text-red-500 transition-colors duration-300">Home</Link>
           <Link href="/predict" className="font-medium text-gray-800 hover:text-red-500 transition-colors duration-300">Predict</Link>
           <Link href="/dashboard" className="font-medium text-gray-800 hover:text-red-500 transition-colors duration-300">Dashboard</Link>
-          <Link href="/reports" className="font-medium text-gray-800 hover:text-red-500 transition-colors duration-300">Reports</Link>
+          <Link href="/report" className="font-medium text-gray-800 hover:text-red-500 transition-colors duration-300">Reports</Link>
+          <Link href="/about" className="font-medium text-red-500">About</Link>
         </div>
 
         {/* Mobile menu button */}
@@ -65,11 +65,18 @@ const Navbar = () => {
             Dashboard
           </Link>
           <Link 
-            href="/reports" 
+            href="/report" 
             className="block py-2 px-4 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-md transition-colors duration-300"
             onClick={() => setMobileMenuOpen(false)}
           >
             Reports
+          </Link>
+          <Link 
+            href="/about" 
+            className="block py-2 px-4 text-red-500 bg-red-50 rounded-md"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            About
           </Link>
         </div>
       )}
@@ -77,214 +84,378 @@ const Navbar = () => {
   );
 };
 
-export default function About() {
+interface AnimatedCounterProps {
+  target: number;
+  duration?: number;
+  suffix?: string;
+}
+
+const AnimatedCounter = ({ target, duration = 2000, suffix = "" }: AnimatedCounterProps) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    const element = document.getElementById('stats-section');
+    if (element) observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let startTime: number | null = null;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeOutQuart * target));
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [isVisible, target, duration]);
+
   return (
-    <div className="bg-white min-h-screen font-sans text-gray-800">
+    <span className="text-4xl font-bold text-red-500">
+      {count.toLocaleString()}{suffix}
+    </span>
+  );
+};
+
+interface InteractiveCardProps {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  onClick: () => void;
+}
+
+const InteractiveCard = ({ icon: Icon, title, description, onClick }: InteractiveCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      className={`bg-white rounded-xl p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
+        isHovered ? 'ring-2 ring-red-200' : ''
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+    >
+      <div className="flex items-center mb-4">
+        <div className={`p-3 rounded-lg transition-colors duration-300 ${
+          isHovered ? 'bg-red-100' : 'bg-gray-100'
+        }`}>
+          <Icon className={`w-6 h-6 transition-colors duration-300 ${
+            isHovered ? 'text-red-500' : 'text-gray-600'
+          }`} />
+        </div>
+        <h3 className="ml-3 text-lg font-semibold text-gray-800">{title}</h3>
+      </div>
+      <p className="text-gray-600 leading-relaxed">{description}</p>
+    </div>
+  );
+};
+
+export default function About() {
+  const [activeTab, setActiveTab] = useState('mission');
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate form submission
+    alert('Thank you for your message! We\'ll get back to you soon.');
+    setContactForm({ name: '', email: '', message: '' });
+    setShowContactForm(false);
+  };
+
+  const handleCardClick = (action: string) => {
+    switch (action) {
+      case 'predict':
+        window.location.href = '/predict';
+        break;
+      case 'dashboard':
+        window.location.href = '/dashboard';
+        break;
+      case 'contact':
+        setShowContactForm(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <div className="bg-gray-50 min-h-screen font-sans text-gray-900">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-red-50 to-white py-20 px-6 md:px-8">
-        <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
-            Welcome to HeartCare
-          </h1>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+      <section className="py-20 px-6 md:px-8 opacity-0 animate-fade-in">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">Welcome to HeartCare</h1>
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed mb-8">
             Your partner in heart health monitoring and management through innovative technology and personalized insights.
           </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button 
+              onClick={() => handleCardClick('predict')}
+              className="bg-red-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              Start Prediction
+            </button>
+            <button 
+              onClick={() => handleCardClick('dashboard')}
+              className="bg-white text-red-500 px-6 py-3 rounded-lg font-medium border-2 border-red-500 hover:bg-red-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              View Dashboard
+            </button>
+          </div>
         </div>
       </section>
-      
-      {/* About Section */}
-      <section className="max-w-7xl mx-auto py-16 md:py-24 px-6 md:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
-            About HeartCare
-          </h2>
-          <div className="h-1 w-24 bg-red-500 mx-auto rounded-full"></div>
+
+      {/* Interactive Stats Section */}
+      <section id="stats-section" className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <h2 className="text-3xl font-serif font-bold text-center mb-12">Our Impact</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <AnimatedCounter target={10000} suffix="+" />
+              <p className="text-gray-600 mt-2">Users Served</p>
+            </div>
+            <div className="text-center">
+              <AnimatedCounter target={95} suffix="%" />
+              <p className="text-gray-600 mt-2">Accuracy Rate</p>
+            </div>
+            <div className="text-center">
+              <AnimatedCounter target={24} suffix="/7" />
+              <p className="text-gray-600 mt-2">Support Available</p>
+            </div>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-          {[ 
-            { 
-              src: '/img/9817.jpg', 
-              title: 'Smart Monitoring',
-              text: 'HeartCare helps you monitor and manage your heart health with smart technology, providing personalized risk predictions.' 
-            },
-            { 
-              src: '/img/20944835.jpg', 
-              title: 'Accessible Health',
-              text: 'Our goal is to make heart health management accessible and simple, giving reliable insights and recommendations.' 
-            },
-            { 
-              src: '/img/na_feb_47.jpg', 
-              title: 'Proactive Care',
-              text: 'Join us in making heart care proactive, accessible, and effective for everyone with HeartCare.' 
-            }
-          ].map((card, index) => (
-            <div 
-              key={index} 
-              className="border border-gray-200 p-6 rounded-xl shadow-lg flex flex-col items-center bg-white hover:shadow-xl hover:border-red-100 transition-all duration-300 transform hover:-translate-y-1"
+      </section>
+
+      {/* Interactive Features Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <h2 className="text-3xl font-serif font-bold text-center mb-12">What We Offer</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <InteractiveCard
+              icon={HiLightningBolt}
+              title="AI-Powered Predictions"
+              description="Get instant heart health predictions using our advanced machine learning algorithms."
+              onClick={() => handleCardClick('predict')}
+            />
+            <InteractiveCard
+              icon={HiChartBar}
+              title="Personalized Dashboard"
+              description="Track your heart health metrics and view detailed analytics in real-time."
+              onClick={() => handleCardClick('dashboard')}
+            />
+            <InteractiveCard
+              icon={HiShieldCheck}
+              title="Expert Support"
+              description="Connect with our team of healthcare professionals for personalized guidance."
+              onClick={() => handleCardClick('contact')}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive About Section */}
+      <section className="max-w-4xl mx-auto py-12 px-6 md:px-8 opacity-0 animate-fade-in-delay">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="flex flex-wrap mb-6">
+            <button
+              onClick={() => setActiveTab('mission')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'mission' 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
-              <div className="relative w-full h-48 mb-6 overflow-hidden rounded-lg">
-                <Image 
-                  src={card.src} 
-                  alt={card.title} 
-                  fill 
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-500 hover:scale-105" 
+              Our Mission
+            </button>
+            <button
+              onClick={() => setActiveTab('vision')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'vision' 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Our Vision
+            </button>
+            <button
+              onClick={() => setActiveTab('values')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'values' 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Our Values
+            </button>
+          </div>
+
+          <div className="min-h-[200px]">
+            {activeTab === 'mission' && (
+              <div className="opacity-0 animate-fade-in">
+                <h3 className="text-xl font-semibold mb-4">Our Mission</h3>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  To empower individuals with the knowledge and tools needed to take control of their heart health, 
+                  prevent disease, and improve quality of life through innovative technology and personalized care.
+                </p>
+              </div>
+            )}
+            {activeTab === 'vision' && (
+              <div className="opacity-0 animate-fade-in">
+                <h3 className="text-xl font-semibold mb-4">Our Vision</h3>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  A world where heart disease prevention is accessible to everyone, where early detection saves lives, 
+                  and where technology bridges the gap between healthcare and personal wellness.
+                </p>
+              </div>
+            )}
+            {activeTab === 'values' && (
+              <div className="opacity-0 animate-fade-in">
+                <h3 className="text-xl font-semibold mb-4">Our Values</h3>
+                <ul className="text-gray-700 text-base leading-relaxed space-y-2">
+                  <li>• <strong>Innovation:</strong> Continuously improving our technology and services</li>
+                  <li>• <strong>Accessibility:</strong> Making heart health monitoring available to all</li>
+                  <li>• <strong>Accuracy:</strong> Providing reliable and precise health insights</li>
+                  <li>• <strong>Privacy:</strong> Protecting your health data with the highest security standards</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Contact Section */}
+      <section className="max-w-4xl mx-auto py-12 px-6 md:px-8 opacity-0 animate-fade-in-delay-2">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h3 className="text-2xl font-semibold mb-6 text-center">Get in Touch</h3>
+          
+          {!showContactForm ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div 
+                  className="p-4 border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 cursor-pointer transition-all duration-300"
+                  onClick={() => navigator.clipboard.writeText('info@heartcare.com')}
+                >
+                  <h4 className="font-semibold text-gray-800">Email</h4>
+                  <p className="text-red-500">info@heartcare.com</p>
+                  <p className="text-sm text-gray-500">Click to copy</p>
+                </div>
+                <div 
+                  className="p-4 border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 cursor-pointer transition-all duration-300"
+                  onClick={() => navigator.clipboard.writeText('(123) 456-7890')}
+                >
+                  <h4 className="font-semibold text-gray-800">Phone</h4>
+                  <p className="text-red-500">(123) 456-7890</p>
+                  <p className="text-sm text-gray-500">Click to copy</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-center">
+                <button
+                  onClick={() => setShowContactForm(true)}
+                  className="bg-red-500 text-white px-8 py-4 rounded-lg font-medium hover:bg-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  Send us a Message
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleContactSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <input
+                  type="text"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  required
                 />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{card.title}</h3>
-              <p className="text-gray-700 text-center leading-relaxed">{card.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      
-      {/* Vision & Mission Section */}
-      <section className="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20 px-6 md:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-12">
-            <h3 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-4 flex items-center">
-              <span className="bg-red-100 text-red-500 p-2 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </span>
-              Our Vision
-            </h3>
-            <p className="text-gray-700 leading-relaxed md:text-lg">
-              We envision a world where technology bridges the gap between patients and healthcare providers, empowering individuals with data-driven insights to take control of their heart health before problems arise.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-            <h3 className="text-2xl md:text-3xl font-serif font-bold text-gray-900 mb-4 flex items-center">
-              <span className="bg-red-100 text-red-500 p-2 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </span>
-              Our Mission
-            </h3>
-            <p className="text-gray-700 leading-relaxed md:text-lg">
-              Leveraging machine learning and predictive analytics, we strive to reduce the global burden of heart disease by providing user-friendly, science-backed tools that make heart health monitoring accessible to everyone.
-            </p>
-          </div>
-        </div>
-      </section>
-      
-      {/* Testimonials Section */}
-      <section className="py-16 md:py-20 px-6 md:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-serif font-bold text-gray-900 mb-4">What People Are Saying</h3>
-            <div className="h-1 w-24 bg-red-500 mx-auto rounded-full"></div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            {[
-              {
-                name: "Al Hanis",
-                role: "Patient",
-                quote: "HeartCare has revolutionized the way I manage my heart health. The insights have been incredibly helpful, and I feel more in control of my health than ever before."
-              },
-              {
-                name: "Luqman",
-                role: "Healthcare Professional",
-                quote: "As a healthcare provider, I've recommended HeartCare to many of my patients. The data-driven approach helps them stay engaged with their heart health between appointments."
-              }
-            ].map((testimonial, index) => (
-              <div 
-                key={index} 
-                className="p-6 md:p-8 border border-gray-200 rounded-xl shadow-lg bg-white hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex items-center mb-4">
-                  <div className="bg-red-100 text-red-500 p-2 rounded-full mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="block text-gray-900 font-semibold">{testimonial.name}</span>
-                    <span className="text-gray-500 text-sm">{testimonial.role}</span>
-                  </div>
-                </div>
-                <p className="text-gray-700 italic leading-relaxed">&quot;{testimonial.quote}&quot;</p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  required
+                />
               </div>
-            ))}
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                <textarea
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors duration-300"
+                >
+                  Send Message
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowContactForm(false)}
+                  className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors duration-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </section>
-      
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-red-500 to-red-600 py-16 md:py-20 text-center text-white">
-        <div className="max-w-5xl mx-auto px-6 md:px-8">
-          <h3 className="text-3xl md:text-4xl font-serif font-bold mb-6">Ready to Start Your Heart Health Journey?</h3>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Take the first step toward better heart health today with HeartCare. Our personalized approach helps you understand and improve your cardiac wellness.
-          </p>
-          <Link 
-            href="/predict" 
-            className="inline-block px-8 py-4 bg-white text-red-600 font-semibold rounded-lg shadow-lg hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-500"
-          >
-            Get Started Now
-          </Link>
-        </div>
-      </section>
-      
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-6 md:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <HiHeart className="w-6 h-6 text-red-400" />
-              <h2 className="text-xl font-serif font-bold">HeartCare</h2>
-            </div>
-            <p className="text-gray-400 max-w-md">
-              Empowering you to take control of your heart health through technology, data, and personalized insights.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-lg mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-400 hover:text-white transition-colors duration-300">Home</Link>
-              </li>
-              <li>
-                <Link href="/predict" className="text-gray-400 hover:text-white transition-colors duration-300">Predict</Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors duration-300">Dashboard</Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-lg mb-4">Contact</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                info@heartcare.com
-              </li>
-              <li className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                (123) 456-7890
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} HeartCare. All rights reserved.</p>
-        </div>
+
+      <footer className="max-w-3xl mx-auto border-t border-gray-200 mt-12 pt-8 text-center text-gray-500 text-sm opacity-0 animate-fade-in-delay-3">
+        <p>© {new Date().getFullYear()} HeartCare. All rights reserved.</p>
       </footer>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .animate-fade-in-delay {
+          animation: fadeIn 0.8s ease-out 0.2s forwards;
+        }
+        
+        .animate-fade-in-delay-2 {
+          animation: fadeIn 0.8s ease-out 0.4s forwards;
+        }
+        
+        .animate-fade-in-delay-3 {
+          animation: fadeIn 0.8s ease-out 0.6s forwards;
+        }
+      `}</style>
     </div>
   );
 }

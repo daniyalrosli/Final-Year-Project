@@ -8,7 +8,7 @@ import pandas as pd
 app = Flask(__name__)
 
 # Enable CORS only for your frontend
-CORS(app, resources={r"/*": {"origins": "https://heartcare-brown.vercel.app"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000/predict"}})
 
 # Load the trained model and scaler
 try:

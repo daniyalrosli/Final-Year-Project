@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import Link from "next/link";
 import dynamic from 'next/dynamic';
+import Navbar from '../components/navbar';
 
 // Dynamically import Chart.js components
 const LineChart = dynamic(
@@ -112,7 +112,7 @@ const ReportPage = () => {
         font: { 
           size: 18, 
           family: "'Poppins', sans-serif", 
-          weight: "bold" 
+          weight: "bold" as const
         },
         padding: {
           bottom: 30
@@ -169,111 +169,86 @@ const ReportPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Add Google Fonts */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
-        body {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        h1, h2, h3, .brand-text, .nav-links {
-          font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-      `}</style>
+      <Navbar currentPage="/report" />
+      
+      <div className="max-w-7xl mx-auto py-12 px-6 md:px-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif">HeartCare Health Report</h1>
+          <p className="text-xl text-gray-700">Comprehensive health analysis and insights</p>
+        </div>
+        
+        <div className="flex justify-center mb-8">
+          <button 
+            onClick={handleExportPDF}
+            disabled={isExporting}
+            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg transform hover:scale-105"
+          >
+            <span className="mr-2">⬇</span>
+            {isExporting ? 'Generating PDF...' : 'Export Report'}
+          </button>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-lg p-8 md:p-10" ref={reportRef}>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Health Risk Assessment Report</h1>
+            <p className="text-gray-500 text-lg">Generated on {new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</p>
+          </div>
 
-      <nav className="bg-white border-b border-gray-100 fixed w-full z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <Link href="/" className="text-2xl font-bold text-red-600 tracking-tight hover:text-red-700 transition-colors">
-                  HeartCare
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center space-x-5">
-              <button 
-                onClick={handleExportPDF}
-                disabled={isExporting}
-                className="inline-flex items-center px-5 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 shadow-sm"
-              >
-                <span className="mr-2">⬇</span>
-                {isExporting ? 'Generating PDF...' : 'Export Report'}
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
-                <span className="text-xl">🖨️</span>
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
-                <span className="text-xl">🔗</span>
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <StatCard title="Total Assessments" value="150" trend="+12%" />
+            <StatCard title="Average Risk Score" value="73" trend="-5%" />
+            <StatCard title="High Risk Cases" value="32" trend="+8%" />
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-8 mb-8 border border-gray-100">
+            <div className="h-96">
+              {chartData && chartOptions && (
+                <LineChart data={chartData} options={chartOptions} />
+              )}
             </div>
           </div>
-        </div>
-      </nav>
 
-      <main className="pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mt-4" ref={reportRef}>
-            <div className="bg-white rounded-xl shadow-sm p-8 mb-6 border border-gray-100">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Health Risk Assessment Report</h1>
-              <p className="text-gray-500 text-lg">Generated on {new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <StatCard title="Total Assessments" value="150" trend="+12%" />
-              <StatCard title="Average Risk Score" value="73" trend="-5%" />
-              <StatCard title="High Risk Cases" value="32" trend="+8%" />
-            </div>
-
-   <div className="bg-white rounded-xl shadow-sm p-8 mb-6 border border-gray-100">
-  <div className="h-96">
-    {chartData && chartOptions && (
-      <LineChart data={chartData} options={chartOptions} />
-    )}
-  </div>
-</div>
-
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Patient Analysis</h2>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-tl-lg">Patient ID</th>
-                      <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Risk Level</th>
-                      <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Key Factors</th>
-                      <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-tr-lg">Recommendation</th>
+          <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Patient Analysis</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-tl-lg">Patient ID</th>
+                    <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Risk Level</th>
+                    <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Key Factors</th>
+                    <th className="px-6 py-4 bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider rounded-tr-lg">Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-100">
+                  {[
+                    { id: 'P001', risk: 'High', riskClass: 'text-red-600 font-medium', factors: 'Age, Blood Pressure', recommendation: 'Immediate consultation' },
+                    { id: 'P002', risk: 'Moderate', riskClass: 'text-yellow-600 font-medium', factors: 'Cholesterol', recommendation: 'Dietary changes' },
+                    { id: 'P003', risk: 'Low', riskClass: 'text-green-600 font-medium', factors: 'Family History', recommendation: 'Regular checkups' },
+                    { id: 'P004', risk: 'High', riskClass: 'text-red-600 font-medium', factors: 'Smoking, Obesity', recommendation: 'Lifestyle intervention' },
+                  ].map((patient, index) => (
+                    <tr key={patient.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{patient.id}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${patient.riskClass}`}>{patient.risk}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{patient.factors}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{patient.recommendation}</td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {[
-                      { id: 'P001', risk: 'High', riskClass: 'text-red-600 font-medium', factors: 'Age, Blood Pressure', recommendation: 'Immediate consultation' },
-                      { id: 'P002', risk: 'Moderate', riskClass: 'text-yellow-600 font-medium', factors: 'Cholesterol', recommendation: 'Dietary changes' },
-                      { id: 'P003', risk: 'Low', riskClass: 'text-green-600 font-medium', factors: 'Family History', recommendation: 'Regular checkups' },
-                      { id: 'P004', risk: 'High', riskClass: 'text-red-600 font-medium', factors: 'Smoking, Obesity', recommendation: 'Lifestyle intervention' },
-                    ].map((patient, index) => (
-                      <tr key={patient.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{patient.id}</td>
-                        <td className={`px-6 py-4 whitespace-nowrap text-sm ${patient.riskClass}`}>{patient.risk}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{patient.factors}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{patient.recommendation}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="mt-8 text-center">
-                <p className="text-sm text-gray-500">This report is automatically generated and should be reviewed by a healthcare professional.</p>
-                <p className="text-sm text-gray-400 mt-1">© 2025 HeartCare Health Systems</p>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-500">This report is automatically generated and should be reviewed by a healthcare professional.</p>
+              <p className="text-sm text-gray-400 mt-1">© 2025 HeartCare Health Systems</p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
@@ -288,7 +263,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, trend }) => {
   const isPositive = trend.startsWith('+');
   
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all duration-300 hover:shadow-md">
+    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 transition-all duration-300 hover:shadow-xl">
       <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
       <div className="mt-2 flex items-baseline">
         <p className="text-3xl font-bold text-gray-900">{value}</p>
