@@ -10,69 +10,63 @@ const LineChart = dynamic(
   { ssr: false }
 );
 
-// Dynamically import PDF generation dependencies
-interface GeneratePDFProps {
-  reportRef: React.RefObject<HTMLDivElement>;
+interface LatestPrediction {
+  formData: Record<string, string>;
+  prediction: string;
+  confidence: string;
+  timestamp: string;
+  id: string;
+  liked?: boolean;
 }
-
-const generatePDF = async ({ reportRef }: GeneratePDFProps): Promise<boolean> => {
-  if (typeof window === 'undefined') return false;
-  
-  try {
-    // Dynamically import libraries only on client-side
-    const jsPDF = (await import('jspdf')).default;
-    const html2canvas = (await import('html2canvas')).default;
-    
-    const element = reportRef.current;
-    if (!element) throw new Error('Report element not found');
-    
-    const canvas = await html2canvas(element, {
-      logging: false,
-      useCORS: true,
-      background: '#ffffff'
-    });
-    
-    const imgWidth = 210; // A4 width in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png');
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save(`HeartCare_Report_${new Date().toISOString().split('T')[0]}.pdf`);
-    
-    return true;
-  } catch (error) {
-    console.error('PDF generation failed:', error);
-    return false;
-  }
-};
 
 const ReportPage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const reportRef = useRef(null);
-  // Removed unused chartInstance state
+  const [latest, setLatest] = useState<LatestPrediction | null>(null);
 
-  // Register Chart.js on client-side only
+  // Fetch latest prediction from localStorage
   useEffect(() => {
-    const registerChart = async () => {
-      if (typeof window !== 'undefined') {
-        const { Chart, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend } = 
-          await import('chart.js');
-        
-        Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+    if (typeof window !== 'undefined') {
+      const latestRaw = localStorage.getItem('latestHeartPrediction');
+      if (latestRaw) {
+        try {
+          setLatest(JSON.parse(latestRaw));
+        } catch {
+          setLatest(null);
+        }
       }
-    };
-    
-    registerChart();
+    }
   }, []);
+
+  // PDF export logic unchanged
+  const generatePDF = async () => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const jsPDF = (await import('jspdf')).default;
+      const html2canvas = (await import('html2canvas')).default;
+      const element = reportRef.current;
+      if (!element) throw new Error('Report element not found');
+      const canvas = await html2canvas(element, { logging: false, useCORS: true, background: '#ffffff' });
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`HeartCare_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+      return true;
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      return false;
+    }
+  };
 
   const handleExportPDF = async () => {
     setIsExporting(true);
-    await generatePDF({ reportRef });
+    await generatePDF();
     setIsExporting(false);
   };
 
+  // Chart data (demo)
   const chartData = {
     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
     datasets: [{
@@ -94,89 +88,58 @@ const ReportPage = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: { 
-          font: { 
-            family: "'Poppins', sans-serif",
-            size: 12,
-            weight: 700 
-          },
-          usePointStyle: true,
-          padding: 20
-        }
-      },
-      title: {
-        display: true,
-        text: 'Risk Score Trends',
-        font: { 
-          size: 18, 
-          family: "'Poppins', sans-serif", 
-          weight: "bold" as const
-        },
-        padding: {
-          bottom: 30
-        },
-        color: '#1f2937'
-      },
-      tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        titleColor: '#1f2937',
-        bodyColor: '#4b5563',
-        borderColor: '#e5e7eb',
-        borderWidth: 1,
-        padding: 12,
-        boxPadding: 6,
-        usePointStyle: true,
-        bodyFont: {
-          family: "'Inter', sans-serif",
-        },
-        titleFont: {
-          family: "'Poppins', sans-serif",
-          weight: 600
-        }
-      }
+      legend: { position: 'top' as const },
+      title: { display: true, text: 'Risk Score Trends' }
     },
     scales: {
-      y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(0, 0, 0, 0.04)' },
-        border: { dash: [4, 4] },
-        ticks: {
-          font: {
-            family: "'Inter', sans-serif",
-            size: 11
-          },
-          color: '#6b7280'
-        }
-      },
-      x: {
-        grid: { display: false },
-        ticks: {
-          font: {
-            family: "'Inter', sans-serif",
-            size: 11
-          },
-          color: '#6b7280'
-        }
-      }
-    },
-    animation: {
-      duration: 2000,
-      easing: 'easeOutQuart' as const
+      y: { beginAtZero: true },
+      x: { grid: { display: false } }
     }
+  };
+
+  // Conclusion logic
+  const getConclusion = () => {
+    if (!latest) return null;
+    const { prediction, confidence } = latest;
+    const conf = parseFloat(confidence);
+    if (prediction === '1' || prediction?.toLowerCase().includes('detected')) {
+      if (conf > 80) return (
+        <div className="text-red-700 font-bold text-lg">
+          ⚠️ High risk of heart disease detected. Immediate medical consultation is strongly recommended.
+        </div>
+      );
+      if (conf > 60) return (
+        <div className="text-amber-700 font-semibold text-lg">
+          ⚠️ Moderate risk detected. Please consult your healthcare provider soon.
+        </div>
+      );
+      return (
+        <div className="text-yellow-700 font-medium text-lg">
+          ⚠ Low-moderate risk detected. Consider lifestyle changes and regular checkups.
+        </div>
+      );
+    } else if (prediction === '0' || prediction?.toLowerCase().includes('no heart disease')) {
+      return (
+        <div className="text-green-700 font-bold text-lg">
+          ✅ No heart disease detected. Keep up your healthy lifestyle!
+        </div>
+      );
+    }
+    return (
+      <div className="text-gray-700 font-medium text-lg">
+        No clear conclusion. Please try again or consult a professional.
+      </div>
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Navbar currentPage="/report" />
-      
       <div className="max-w-7xl mx-auto py-12 px-6 md:px-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif">HeartCare Health Report</h1>
           <p className="text-xl text-gray-700">Comprehensive health analysis and insights</p>
         </div>
-        
         <div className="flex justify-center mb-8">
           <button 
             onClick={handleExportPDF}
@@ -187,23 +150,40 @@ const ReportPage = () => {
             {isExporting ? 'Generating PDF...' : 'Export Report'}
           </button>
         </div>
-        
         <div className="bg-white rounded-xl shadow-lg p-8 md:p-10" ref={reportRef}>
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Health Risk Assessment Report</h1>
-            <p className="text-gray-500 text-lg">Generated on {new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}</p>
+            <p className="text-gray-500 text-lg">Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <StatCard title="Total Assessments" value="150" trend="+12%" />
-            <StatCard title="Average Risk Score" value="73" trend="-5%" />
-            <StatCard title="High Risk Cases" value="32" trend="+8%" />
+          {/* Latest Prediction Section */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Latest Prediction</h2>
+            {latest ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                <div>
+                  <div className="text-gray-700 mb-2"><strong>Prediction:</strong> {latest.prediction}</div>
+                  <div className="text-gray-700 mb-2"><strong>Confidence:</strong> {latest.confidence}%</div>
+                  <div className="text-gray-700 mb-2"><strong>Date:</strong> {new Date(latest.timestamp).toLocaleString()}</div>
+                  <div className="text-gray-700 mb-2"><strong>Liked:</strong> {latest.liked ? 'Yes ❤️' : 'No'}</div>
+                </div>
+                <div>
+                  <div className="text-gray-700 mb-2"><strong>Patient Info:</strong></div>
+                  <ul className="text-gray-600 ml-4">
+                    {Object.entries(latest.formData).map(([key, value]) => (
+                      <li key={key}><strong>{key}:</strong> {value}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-500">No prediction data available. Please make a prediction first.</div>
+            )}
+            {/* Conclusion */}
+            <div className="mt-6">
+              {getConclusion()}
+            </div>
           </div>
-
+          {/* Chart Section */}
           <div className="bg-white rounded-xl shadow-sm p-8 mb-8 border border-gray-100">
             <div className="h-96">
               {chartData && chartOptions && (
@@ -211,7 +191,7 @@ const ReportPage = () => {
               )}
             </div>
           </div>
-
+          {/* Patient Table Section (demo) */}
           <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Patient Analysis</h2>
             <div className="overflow-x-auto">
@@ -241,36 +221,11 @@ const ReportPage = () => {
                 </tbody>
               </table>
             </div>
-            
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-500">This report is automatically generated and should be reviewed by a healthcare professional.</p>
               <p className="text-sm text-gray-400 mt-1">© 2025 HeartCare Health Systems</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface StatCardProps {
-  title: string;
-  value: string;
-  trend: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, trend }) => {
-  const isPositive = trend.startsWith('+');
-  
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 transition-all duration-300 hover:shadow-xl">
-      <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
-      <div className="mt-2 flex items-baseline">
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
-        <div className={`ml-2 px-2 py-0.5 rounded-full text-sm font-medium ${
-          isPositive ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-        }`}>
-          {trend}
         </div>
       </div>
     </div>

@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { HiHeart, HiOutlineMenu, HiX } from 'react-icons/hi';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+import { XMarkIcon, Bars3Icon } from '@heroicons/react/24/outline';
 
 interface NavbarProps {
   currentPage?: string;
@@ -25,7 +26,7 @@ const Navbar = ({ currentPage = '' }: NavbarProps) => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo with HeartPulse Icon */}
         <Link href="/" className="flex items-center space-x-2 text-2xl font-serif font-bold text-gray-800 hover:text-red-500 transition-colors duration-300">
-          <HiHeart className="w-8 h-8 text-red-500" />
+          <HeartIconSolid className="w-8 h-8 text-red-500" />
           <span>HeartCare</span>
         </Link>
 
@@ -53,9 +54,9 @@ const Navbar = ({ currentPage = '' }: NavbarProps) => {
             className="p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-300"
           >
             {mobileMenuOpen ? (
-              <HiX className="w-6 h-6" />
+              <XMarkIcon className="w-6 h-6" />
             ) : (
-              <HiOutlineMenu className="w-6 h-6" />
+              <Bars3Icon className="w-6 h-6" />
             )}
           </button>
         </div>
