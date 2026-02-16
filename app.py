@@ -3,10 +3,19 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin Resource Sharing (CORS)
+
+# Enable CORS for all domains (needed for Netlify frontend)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["https://heartcarefyp.netlify.app", "http://localhost:3000", "*"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Load the trained model and scaler
 model = joblib.load('heart_disease_model.pkl')
@@ -20,7 +29,22 @@ columns = [
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return jsonify({
+        "message": "HeartCare API is running",
+        "status": "healthy",
+        "endpoints": {
+            "predict": "/predict (POST)",
+            "health": "/health (GET)"
+        }
+    })
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "model_loaded": model is not None,
+        "scaler_loaded": scaler is not None
+    })
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -73,4 +97,5 @@ def predict():
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port, debug=False)
