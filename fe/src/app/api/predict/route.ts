@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the Render backend URL (deployed Flask API)
-    const backendUrl = process.env.BACKEND_API_URL || 'https://heartcare-api-ixut.onrender.com';
+    const backendUrl = process.env.BACKEND_API_URL || 'https://final-year-project-4v9m.onrender.com';
     console.log('Backend URL:', backendUrl);
     
     // Forward the request to the backend with timeout

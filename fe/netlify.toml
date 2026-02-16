@@ -4,7 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
-  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"
+  BACKEND_API_URL = "https://final-year-project-4v9m.onrender.com"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -19,7 +19,7 @@
 
 # Environment variables
 [context.production.environment]
-  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"
+  BACKEND_API_URL = "https://final-year-project-4v9m.onrender.com"
 
 [context.deploy-preview.environment]
-  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"
+  BACKEND_API_URL = "https://final-year-project-4v9m.onrender.com"
