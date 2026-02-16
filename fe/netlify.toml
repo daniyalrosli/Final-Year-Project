@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Environment variables
+[context.production.environment]
+  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"
+
+[context.deploy-preview.environment]
+  BACKEND_API_URL = "https://heartcare-api-ixut.onrender.com"

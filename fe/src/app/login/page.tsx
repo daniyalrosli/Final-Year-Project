@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { HiHeart, HiUser, HiLockClosed } from 'react-icons/hi';
+import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { HeartIcon } from '@heroicons/react/24/solid';
 import Navbar from '../components/navbar';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -66,7 +67,7 @@ export default function Login() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="flex justify-center mb-6">
-              <HiHeart className="w-12 h-12 text-red-500" />
+              <HeartIcon className="w-12 h-12 text-red-500" />
             </div>
             <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2">Welcome Back</h2>
             <p className="text-gray-600">Sign in to your HeartCare account</p>
@@ -80,7 +81,7 @@ export default function Login() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <HiUser className="h-5 w-5 text-gray-400" />
+                    <UserIcon className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     id="username"
@@ -101,7 +102,7 @@ export default function Login() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <HiLockClosed className="h-5 w-5 text-gray-400" />
+                    <LockClosedIcon className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
                     id="password"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
@@ -16,6 +16,12 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ef4444",
+};
 
 export const metadata: Metadata = {
   title: "HeartCare - Your Heart Health Partner",
@@ -47,9 +53,6 @@ export const metadata: Metadata = {
     description: "AI-powered heart health monitoring and personalized insights",
     images: ["/img/OrgCoral_Med-04_Concept-01.jpg"],
   },
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#ef4444",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

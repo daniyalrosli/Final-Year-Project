@@ -48,13 +48,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Define the backend API URL
-    const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
+    // Use the Render backend URL (deployed Flask API)
+    const backendUrl = process.env.BACKEND_API_URL || 'https://heartcare-api-ixut.onrender.com';
     console.log('Backend URL:', backendUrl);
     
     // Forward the request to the backend with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for cold starts
     
     try {
       const response = await fetch(`${backendUrl}/predict`, {
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
 
       clearTimeout(timeoutId);
       console.log('Backend response status:', response.status);
-      console.log('Backend response headers:', Object.fromEntries(response.headers.entries()));
 
       // Check if the backend response is successful
       if (!response.ok) {
@@ -102,7 +101,7 @@ export async function POST(request: NextRequest) {
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
         console.error('Request timeout');
         return NextResponse.json(
-          { error: 'Request timeout. The backend server is taking too long to respond.' },
+          { error: 'Request timeout. The prediction service is starting up, please try again in a moment.' },
           { status: 408 }
         );
       }
@@ -110,7 +109,7 @@ export async function POST(request: NextRequest) {
       console.error('Fetch error:', fetchError);
       return NextResponse.json(
         { 
-          error: 'Unable to connect to the backend server. Please ensure the backend is running on http://localhost:8000',
+          error: 'Unable to connect to the prediction service. It may be starting up - please try again in 30 seconds.',
           details: fetchError instanceof Error ? fetchError.message : 'Unknown fetch error'
         },
         { status: 503 }

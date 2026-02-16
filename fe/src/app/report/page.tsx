@@ -3,6 +3,29 @@
 import React, { useRef, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from '../components/navbar';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 // Dynamically import Chart.js components
 const LineChart = dynamic(
@@ -46,7 +69,7 @@ const ReportPage = () => {
       const html2canvas = (await import('html2canvas')).default;
       const element = reportRef.current;
       if (!element) throw new Error('Report element not found');
-      const canvas = await html2canvas(element, { logging: false, useCORS: true, background: '#ffffff' });
+      const canvas = await html2canvas(element, { logging: false, useCORS: true, backgroundColor: '#ffffff' });
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -68,19 +91,23 @@ const ReportPage = () => {
 
   // Chart data (demo)
   const chartData = {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [{
-      label: 'Average Risk Score',
-      data: [70, 75, 65, 80],
+      label: 'Heart Disease Risk Score',
+      data: [65, 72, 68, 75, 70, 65],
       borderColor: 'rgb(220, 38, 38)',
-      backgroundColor: 'rgba(220, 38, 38, 0.08)',
+      backgroundColor: 'rgba(220, 38, 38, 0.1)',
       tension: 0.4,
       fill: true,
-      borderWidth: 2,
+      borderWidth: 2.5,
       pointRadius: 4,
       pointBackgroundColor: '#ffffff',
       pointBorderColor: 'rgb(220, 38, 38)',
       pointBorderWidth: 2,
+      pointHoverRadius: 6,
+      pointHoverBackgroundColor: 'rgb(220, 38, 38)',
+      pointHoverBorderColor: '#ffffff',
+      pointHoverBorderWidth: 2,
     }],
   };
 
@@ -88,14 +115,43 @@ const ReportPage = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top' as const },
-      title: { display: true, text: 'Risk Score Trends' }
+      legend: {
+        position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20
+        }
+      },
+      title: {
+        display: true,
+        text: 'Risk Score Trends',
+        padding: { bottom: 30 }
+      }
     },
     scales: {
-      y: { beginAtZero: true },
-      x: { grid: { display: false } }
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    elements: {
+      line: {
+        tension: 0.4
+      },
+      point: {
+        radius: 4,
+        hitRadius: 10,
+        hoverRadius: 6
+      }
     }
-  };
+  } as const;
 
   // Conclusion logic
   const getConclusion = () => {
@@ -184,8 +240,8 @@ const ReportPage = () => {
             </div>
           </div>
           {/* Chart Section */}
-          <div className="bg-white rounded-xl shadow-sm p-8 mb-8 border border-gray-100">
-            <div className="h-96">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8 mb-8 border border-gray-100">
+            <div className="relative h-72 sm:h-80 md:h-96 w-full">
               {chartData && chartOptions && (
                 <LineChart data={chartData} options={chartOptions} />
               )}
