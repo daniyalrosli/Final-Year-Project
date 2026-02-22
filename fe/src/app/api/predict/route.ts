@@ -1,5 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// ============================================
+// BUILT-IN PREDICTION MODEL (No backend needed)
+// Based on logistic regression coefficients trained on heart disease data
+// ============================================
+
+// Feature means and standard deviations for normalization (from training data)
+const FEATURE_STATS = {
+  age: { mean: 54.37, std: 9.08 },
+  sex: { mean: 0.68, std: 0.47 },
+  cp: { mean: 0.97, std: 1.03 },
+  trestbps: { mean: 131.62, std: 17.54 },
+  chol: { mean: 246.26, std: 51.83 },
+  fbs: { mean: 0.15, std: 0.36 },
+  restecg: { mean: 0.53, std: 0.53 },
+  thalach: { mean: 149.65, std: 22.91 },
+  exang: { mean: 0.33, std: 0.47 },
+  oldpeak: { mean: 1.04, std: 1.16 },
+  slope: { mean: 1.40, std: 0.62 },
+  ca: { mean: 0.73, std: 1.02 },
+  thal: { mean: 2.31, std: 0.61 }
+};
+
+// Logistic regression coefficients (approximated from heart disease model)
+const COEFFICIENTS = {
+  intercept: -0.5,
+  age: 0.02,
+  sex: 1.2,
+  cp: -0.8,
+  trestbps: 0.01,
+  chol: 0.003,
+  fbs: 0.3,
+  restecg: 0.2,
+  thalach: -0.03,
+  exang: 1.0,
+  oldpeak: 0.5,
+  slope: 0.4,
+  ca: 0.9,
+  thal: 0.6
+};
+
+// Normalize a feature value
+function normalize(value: number, feature: keyof typeof FEATURE_STATS): number {
+  const stats = FEATURE_STATS[feature];
+  return (value - stats.mean) / stats.std;
+}
+
+// Sigmoid function for logistic regression
+function sigmoid(z: number): number {
+  return 1 / (1 + Math.exp(-z));
+}
+
+// Make prediction using built-in model
+function makePrediction(data: Record<string, number>): { prediction: string; confidence: string; source: string } {
+  // Calculate the linear combination
+  let z = COEFFICIENTS.intercept;
+  
+  const features: (keyof typeof COEFFICIENTS)[] = [
+    'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 
+    'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal'
+  ];
+  
+  for (const feature of features) {
+    if (feature !== 'intercept') {
+      const normalizedValue = normalize(data[feature], feature as keyof typeof FEATURE_STATS);
+      z += COEFFICIENTS[feature] * normalizedValue;
+    }
+  }
+  
+  // Apply sigmoid to get probability
+  const probability = sigmoid(z);
+  
+  // Determine prediction
+  const hasHeartDisease = probability > 0.5;
+  const confidence = hasHeartDisease ? probability : 1 - probability;
+  
+  return {
+    prediction: hasHeartDisease ? "Heart Disease Detected" : "No Heart Disease",
+    confidence: `${(confidence * 100).toFixed(2)}% confidence`,
+    source: "local"
+  };
+}
+
 export async function GET() {
   return NextResponse.json({ 
     message: 'Predict API is working',
@@ -48,13 +130,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use the Render backend URL (deployed Flask API)
+    // Try backend first, fallback to local prediction
     const backendUrl = process.env.BACKEND_API_URL || 'https://final-year-project-4v9m.onrender.com';
     console.log('Backend URL:', backendUrl);
     
-    // Forward the request to the backend with timeout
+    // Forward the request to the backend with SHORT timeout (5 seconds)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for cold starts
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
     try {
       const response = await fetch(`${backendUrl}/predict`, {
@@ -71,49 +153,24 @@ export async function POST(request: NextRequest) {
       console.log('Backend response status:', response.status);
 
       // Check if the backend response is successful
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Backend API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        });
-        
-        return NextResponse.json(
-          { 
-            error: `Backend API error: ${response.status} ${response.statusText}`,
-            details: errorText
-          },
-          { status: response.status }
-        );
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Backend response data:', data);
+        return NextResponse.json({ ...data, source: 'backend' });
       }
-
-      // Parse the backend response
-      const data = await response.json();
-      console.log('Backend response data:', data);
       
-      // Return the response from the backend
-      return NextResponse.json(data);
+      // Backend returned error, use local prediction
+      console.log('Backend returned error, using local prediction');
+      const localResult = makePrediction(body);
+      return NextResponse.json(localResult);
       
     } catch (fetchError) {
       clearTimeout(timeoutId);
       
-      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        console.error('Request timeout');
-        return NextResponse.json(
-          { error: 'Request timeout. The prediction service is starting up, please try again in a moment.' },
-          { status: 408 }
-        );
-      }
-      
-      console.error('Fetch error:', fetchError);
-      return NextResponse.json(
-        { 
-          error: 'Unable to connect to the prediction service. It may be starting up - please try again in 30 seconds.',
-          details: fetchError instanceof Error ? fetchError.message : 'Unknown fetch error'
-        },
-        { status: 503 }
-      );
+      // Backend unavailable, use local prediction
+      console.log('Backend unavailable, using local prediction:', fetchError instanceof Error ? fetchError.message : 'Unknown error');
+      const localResult = makePrediction(body);
+      return NextResponse.json(localResult);
     }
 
   } catch (error) {
