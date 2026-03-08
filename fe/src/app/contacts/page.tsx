@@ -1,6 +1,8 @@
 'use client';
 
 import Navbar from '../components/navbar';
+import { Layout, Container, Section, Card, Grid } from "@/components/ui/layout";
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 
 const ContactsPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
@@ -10,23 +12,29 @@ const ContactsPage = () => {
   };
 
   return (
-    <>
+    <Layout>
       <Navbar currentPage="/contacts" />
-      <div className="bg-gray-50 min-h-screen py-12 px-6 md:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">Get in Touch</h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              We&apos;re here to help with your heart health journey. Reach out to us anytime.
+      <Section className="bg-gray-50">
+        <Container size="lg" className="py-10">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-semibold mb-4">
+              <HeartIconSolid className="w-4 h-4" />
+              We&apos;re here to help
+            </div>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-black mb-3">
+              Contact HeartCare Support
+            </h1>
+            <p className="text-base md:text-lg text-black max-w-2xl mx-auto">
+              Have a question about your dashboard, predictions, or account? Send us a message and our team will respond as soon as possible.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <Grid cols={2} gap="xl">
             {/* Contact Information */}
-            <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-lg">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-8">Get in Touch</h2>
+            <Card padding="lg" shadow="lg" className="col-span-2 lg:col-span-1">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Get in Touch</h2>
               
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 cursor-pointer transition-all duration-300">
                   <div className="bg-red-100 p-3 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,7 +78,7 @@ const ContactsPage = () => {
               </div>
 
               <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-4">Business Hours</h3>
+                <h3 className="font-semibold text-gray-800 mb-3">Business Hours</h3>
                 <div className="space-y-2 text-gray-600">
                   <div className="flex justify-between">
                     <span>Monday - Friday</span>
@@ -86,11 +94,14 @@ const ContactsPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Contact Form */}
-            <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-lg">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-8">Send us a Message</h2>
+            <Card padding="lg" shadow="lg" className="col-span-2 lg:col-span-1">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Send us a Message</h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Fill in the form below and we&apos;ll get back to you within one business day.
+              </p>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -152,11 +163,11 @@ const ContactsPage = () => {
                   Send Message
                 </button>
               </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+            </Card>
+          </Grid>
+        </Container>
+      </Section>
+    </Layout>
   );
 };
 

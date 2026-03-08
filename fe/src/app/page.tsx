@@ -162,7 +162,7 @@ export default function Home() {
               <div className="bg-red-100 p-3 rounded-full mb-4">
                 <HeartIconSolid className="w-7 h-7 text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Personalized Insights</h3>
+              <h3 className="text-lg font-semibold mb-2 text-black">Personalized Insights</h3>
               <p className="text-gray-600 text-sm">
                 Tailored analytics to help you monitor your heart health and detect potential risks early with AI-powered recommendations.
               </p>
@@ -171,7 +171,7 @@ export default function Home() {
               <div className="bg-red-100 p-3 rounded-full mb-4">
                 <ActivityIcon className="w-7 h-7 text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Real-Time Monitoring</h3>
+              <h3 className="text-lg font-semibold mb-2 text-black">Real-Time Monitoring</h3>
               <p className="text-gray-600 text-sm">
                 Access real-time data and visualize your progress with our interactive dashboards and comprehensive health tracking.
               </p>
@@ -180,7 +180,7 @@ export default function Home() {
               <div className="bg-red-100 p-3 rounded-full mb-4">
                 <ShieldIcon className="w-7 h-7 text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Expert Guidance</h3>
+              <h3 className="text-lg font-semibold mb-2 text-black">Expert Guidance</h3>
               <p className="text-gray-600 text-sm">
                 Built with input from healthcare professionals to ensure accurate and reliable insights backed by medical research.
               </p>
